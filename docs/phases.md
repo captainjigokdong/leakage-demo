@@ -7,11 +7,11 @@
 ## 1단계. 오류 목록과 층화 보류 추첨
 
 **할 일**
-- [ ] `tools/seal.py`: 암호(사용자 입력)로 파일을 암호화/복호화하는 도구. `cryptography` 패키지의 Fernet + PBKDF2. 평문은 커밋하지 않는다.
-- [ ] 오류 사례 18개 작성 (`docs/research_plan.md` 7.1). 각 행: `id, name, source(Kapoor L?/PROBAST 영역), question(Q?), design_types(고정/동적/둘다), how_to_inject, expected_verdict(차단/경고)`.
-- [ ] 질문별 층화 보류 추첨 (질문마다 1개). 시드와 날짜를 `docs/holdout_log.md`에 기록.
-- [ ] 공개 12개 → `designs/error_catalog_public.csv` (커밋)
-- [ ] 보류 6개 → 사용자가 정한 암호로 `sealed/holdout.enc` (커밋). 평문은 즉시 삭제.
+- [x] `tools/seal.py`: 암호(사용자 입력)로 파일을 암호화/복호화하는 도구. `cryptography` 패키지의 Fernet + PBKDF2. 평문은 커밋하지 않는다.
+- [x] 오류 사례 18개 작성 (`docs/research_plan.md` 7.1). 각 행: `id, name, source(Kapoor L?/PROBAST 영역), question(Q?), design_types(고정/동적/둘다), how_to_inject, expected_verdict(차단/경고)`.
+- [x] 질문별 층화 보류 추첨 (질문마다 1개). 시드와 날짜를 `docs/holdout_log.md`에 기록.
+- [x] 공개 12개 → `designs/error_catalog_public.csv` (커밋)
+- [x] 보류 6개 → 사용자가 정한 암호로 `sealed/holdout.enc` (커밋). 평문은 즉시 삭제.
 
 **완료 기준**
 - 공개 CSV 12행, 질문별 배분이 계획과 일치

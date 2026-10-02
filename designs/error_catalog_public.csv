@@ -1,0 +1,13 @@
+id,name,source,question,design_types,how_to_inject,expected_verdict
+E01,이번 입원 진단 코드(ICD)를 입원 중 AKI 예측 특징으로 사용,Kapoor L3.1; PROBAST 2.3,Q1,동적,features에 diagnoses(이번 입원 ICD 코드) 범주 특징 추가,차단
+E02,검사의 tₚ 이전 여부를 채취 시각으로 판단(보고 시각은 tₚ 이후),Kapoor L3.1; PROBAST 2.3,Q1,둘다,검사 특징의 시간 필터 기준 열을 report_time에서 collect_time으로 변경,차단
+E03,입원 전체 기간 집계 특징(입원 중 최고 크레아티닌)을 랜드마크 행에 사용,Kapoor L3.1; PROBAST 2.3,Q1,동적,features에 admission 전체 창의 max(creatinine) 추가(창 끝 = discharge_time),차단
+E06,재입원 예측에서 입원 단위 분할(같은 환자의 여러 입원),Kapoor L3.2; PROBAST 4.6,Q2,고정,split.key를 admission_id로 변경,차단
+E07,설계서는 분할 단위를 가족으로 정했는데 환자 단위로 분할,Kapoor L3.2; PROBAST 4.6,Q2,둘다,split_unit을 family_id로 선언하고 split.key는 patient_id로 둠,차단
+E08,결측 대치(중앙값)를 전체 데이터로 적합,Kapoor L1.2; PROBAST 4.4,Q3,둘다,preprocessing의 median imputer fit_scope를 all로 변경,차단
+E10,결과와의 단변량 연관으로 고른 상위 k개 특징을 전체 데이터에서 선택,Kapoor L1.3; PROBAST 4.5,Q3,둘다,preprocessing에 univariate top-k selector 추가하고 fit_scope를 all로 설정,차단
+E12,재입원 결과를 정한 다음 입원 행의 변수(다음 입원 병동)를 특징으로 사용,Kapoor L2; PROBAST 3.3,Q4,고정,features에 next_admission.unit 추가(결과 정의 행과 같은 행),차단
+E13,투석 오더·신장내과 협진 오더를 AKI 예측 특징으로 사용(대리 변수 목록과 일치),Kapoor L2; PROBAST 3.5,Q4,동적,features에 tₚ 이전 orders(투석·신장내과 협진) 여부 추가,경고
+E14,포함 기준 재원 7일 이상(재원 기간은 퇴원 때 확정되어 불멸 시간 편향),Kapoor L3.3; PROBAST 1.2,Q5,동적,inclusion에 length_of_stay >= 7d 추가,차단
+E15,포함 기준 입원 중 크레아티닌 측정 3회 이상(tₚ 이후 측정 횟수 포함),Kapoor L3.3; PROBAST 1.2,Q5,동적,inclusion에 admission 전체 창 count(creatinine) >= 3 추가,차단
+E17,ICU는 크레아티닌을 매일·병동은 드물게 측정해 AKI 확인 강도가 다름,Kapoor L3.3; PROBAST 3.4,Q7,동적,cohort에 ICU와 병동을 함께 두고 결과 확인 방식을 단위별로 구분하지 않음,경고
