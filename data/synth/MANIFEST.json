@@ -1,0 +1,37 @@
+{
+  "generator_version": "1",
+  "seed": 20261002,
+  "n_patients": 5000,
+  "tables": {
+    "patients": {
+      "file": "patients.csv.gz",
+      "rows": 5000,
+      "sha256_csv": "555b2cf08cc91a4c759cc2e17819efa80f5a0cf188f173e4d358972249fd451c"
+    },
+    "admissions": {
+      "file": "admissions.csv.gz",
+      "rows": 7022,
+      "sha256_csv": "338e93cb2caae5db0428783c49c4430d639830644e0b9570ccde6e9697773627"
+    },
+    "labs": {
+      "file": "labs.csv.gz",
+      "rows": 115929,
+      "sha256_csv": "7d4d75426b4fc729e0741003fdbedb649d9fafd06c0ca790ce5664ab0584b847"
+    },
+    "diagnoses": {
+      "file": "diagnoses.csv.gz",
+      "rows": 12788,
+      "sha256_csv": "ab43f7f287fde8d97cc8f1b51329dc6d2215ec40ebfc8e3fa5931325b68884de"
+    },
+    "procedures": {
+      "file": "procedures.csv.gz",
+      "rows": 1781,
+      "sha256_csv": "35fce327748265790ed78d7ca68dc211ca04793515f03c2696aca231e5843297"
+    },
+    "orders": {
+      "file": "orders.csv.gz",
+      "rows": 10677,
+      "sha256_csv": "4a6465d43ec9510044fb9e1e382c9f290d6c3aa0feb9da8c67d275afac6e1b3b"
+    }
+  }
+}
