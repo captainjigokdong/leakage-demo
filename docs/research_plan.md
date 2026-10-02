@@ -105,6 +105,12 @@
 
 예상: Q1~Q3는 높고 Q4·Q7은 낮다. 그 결과 자체가 "에이전트 점검을 어디까지 자동화할 수 있는가"의 지도다.
 
+### 7.8 누수 효과 시연 (보조 분석, 2026.10.02 추가)
+- 주 결과는 탐지율이다. 모델 성능(AUROC)은 **누수가 성능을 부풀린다**는 것을 보여 주는 보조 시연에만 쓴다.
+- 같은 합성 데이터로 누수 설계와 수정 설계를 각각 학습해 AUROC 차이를 본다. 모델은 로지스틱 회귀, 그래디언트 부스팅, TPOT(Moore 연구실의 AutoML, 1.x).
+- 딥러닝은 쓰지 않는다. 표 형식 요약 특징이라 이점이 없고, 이 연구의 관심은 모델이 아니라 설계다.
+- TPOT 내부 교차검증의 분할 단위를 확인한다. 반복 측정 데이터에서 행 단위 교차검증은 AutoML 자체의 Q2 누수다.
+
 ## 8. 참고문헌
 1. Kapoor S, Narayanan A. Leakage and the reproducibility crisis in machine-learning-based science. *Patterns*. 2023;4(9):100804.
 2. Wolff RF, et al. PROBAST. *Ann Intern Med*. 2019;170(1):51–58.
