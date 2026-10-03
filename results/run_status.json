@@ -1,0 +1,64 @@
+{
+ "가": {
+  "planned": 60,
+  "done": 59,
+  "failed": 1,
+  "retries": 49,
+  "retry_reasons": {
+   "오염: 허용되지 않은 접근": 50
+  },
+  "checker_invoked": 60,
+  "findings_block": 57,
+  "cost_usd": 45.242,
+  "permission_denials": 15,
+  "checker_denied": 1,
+  "contamination_discarded": 50,
+  "no_checker_after_denial": 0,
+  "tokens": {
+   "input": 2260,
+   "cache_creation": 2837844,
+   "cache_read": 23517359,
+   "output": 891348
+  },
+  "mean_seconds_per_attempt": 94.2,
+  "checker_invoked_rate": 1.017,
+  "blank": 1,
+  "mean_tokens_per_run": {
+   "input": 38,
+   "cache_creation": 47297,
+   "cache_read": 391956,
+   "output": 14856
+  }
+ },
+ "나": {
+  "planned": 60,
+  "done": 60,
+  "failed": 0,
+  "retries": 2,
+  "retry_reasons": {
+   "오염: 허용되지 않은 접근": 2
+  },
+  "checker_invoked": 0,
+  "findings_block": 54,
+  "cost_usd": 31.428,
+  "permission_denials": 54,
+  "checker_denied": 0,
+  "contamination_discarded": 2,
+  "no_checker_after_denial": 0,
+  "tokens": {
+   "input": 1078,
+   "cache_creation": 1658385,
+   "cache_read": 11189664,
+   "output": 795924
+  },
+  "mean_seconds_per_attempt": 191.2,
+  "checker_invoked_rate": 0.0,
+  "blank": 0,
+  "mean_tokens_per_run": {
+   "input": 18,
+   "cache_creation": 27640,
+   "cache_read": 186494,
+   "output": 13265
+  }
+ }
+}

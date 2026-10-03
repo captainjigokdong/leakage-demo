@@ -1,0 +1,171 @@
+{
+ "묶음1/가": {
+  "discards": 12,
+  "전체 탐색 시도": 9,
+  ".. 사용": 3,
+  "금지 경로": 0,
+  "기타": 0,
+  "executed_flagged_calls": [
+   {
+    "report_id": "8a5e783a1eee",
+    "try": 3,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/8a5e783a1eee-t3/lchome; grep -n \"scope\\|window\" leakcheck/features.py | head -50; grep -n \"family\" leakcheck/splitting.py | head; cd ../ws; python -c \"\nimport pandas as pd\np=pd.read_csv('data/patients.csv.gz'); a=pd.read_csv('data/admissions.csv.gz',parse_dates=['admit_time','discha"
+   },
+   {
+    "report_id": "8a5e783a1eee",
+    "try": 4,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/8a5e783a1eee-t4/ws/data; for f in *.csv.gz; do echo \"== $f\"; zcat $f | head -4; done; cat ../.claude/skills/leakage-check/scripts/run_check.py | head -50; S=../../tmp/claude-0/-srv-leakruns-8a5e783a1eee-t4-ws/c037b574-2da9-4c10-948c-0aec56034c1c/scratchpad; cat $S/result.json"
+   },
+   {
+    "report_id": "86f6ff747d8e",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/86f6ff747d8e-t1/ws/data; for f in *.csv.gz; do echo \"== $f\"; zcat $f | head -3; done; ls ../..; ls /srv/leakruns/86f6ff747d8e-t1"
+   }
+  ],
+  "report_text_kept": 12,
+  "by_variant": {
+   "design_94F5.json": 2,
+   "design_800E.json": 1,
+   "design_AF15.json": 1,
+   "design_EC59.json": 2,
+   "design_E6D6.json": 4,
+   "design_2340.json": 1,
+   "design_7F4F.json": 1
+  }
+ },
+ "묶음2/가": {
+  "discards": 18,
+  "전체 탐색 시도": 13,
+  ".. 사용": 5,
+  "금지 경로": 0,
+  "기타": 0,
+  "executed_flagged_calls": [
+   {
+    "report_id": "41110cf9e387",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/41110cf9e387-t1/ws; for f in data/*.csv.gz; do echo \"== $f\"; zcat $f | head -4; done; ls -R / 2>/dev/null | grep -n \"leakcheck$\" | head; python -c \"import leakcheck,synth;print(leakcheck.__file__, synth.__file__)\""
+   },
+   {
+    "report_id": "cd939d7b849c",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/cd939d7b849c-t1/ws/.claude/skills/leakage-check; ls -R | head -50; cat ../../../data/MANIFEST.json ../../../data/OUTPATIENT_MANIFEST.json"
+   },
+   {
+    "report_id": "44fab1ce9246",
+    "try": 2,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/44fab1ce9246-t2/ws/data; for f in *.csv.gz; do echo \"== $f\"; zcat $f | head -4; done; cd ..; ls ~ 2>/dev/null; python -c \"import leakcheck,os;print(os.path.dirname(leakcheck.__file__))\""
+   },
+   {
+    "report_id": "44fab1ce9246",
+    "try": 3,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/44fab1ce9246-t3/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.csv.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done; cat ../../tmp/claude-0/*/*/scratchpad/result.json 2>/dev/null | head -80"
+   },
+   {
+    "report_id": "5a593f852c4b",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/5a593f852c4b-t1/ws/data; for f in *.csv.gz; do echo \"== $f\"; zcat $f | head -4; done; ls ../../ ; ls -d ../../*/leakcheck 2>/dev/null"
+   },
+   {
+    "report_id": "5a593f852c4b",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/5a593f852c4b-t1/ws/data; sed -n 60,86p ../../lchome/leakcheck/rules.py; python -c \"\nimport pandas as pd\np=pd.read_csv('patients.csv.gz');a=pd.read_csv('admissions.csv.gz',parse_dates=['admit_time','discharge_time'])\nprint('family_id missing',p.family_id.isna().sum(),'/',len(p),'nfam"
+   },
+   {
+    "report_id": "358d04627f6f",
+    "try": 3,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/358d04627f6f-t3/lchome; grep -n \"DX_CODING_DELAY_H\\s*=\" -A3 leakcheck/rules.py; grep -n -i \"family\" leakcheck/checks.py leakcheck/splitting.py | head -20; cd ../ws/data; python -c \"\nimport pandas as pd\np=pd.read_csv('patients.csv.gz'); a=pd.read_csv('admissions.csv.gz',parse_dates=["
+   }
+  ],
+  "report_text_kept": 18,
+  "by_variant": {
+   "design_94F5.json": 1,
+   "design_F872.json": 5,
+   "design_A1C2.json": 1,
+   "design_AF15.json": 4,
+   "design_E0E0.json": 1,
+   "design_9AF0.json": 1,
+   "design_E6D6.json": 2,
+   "design_9672.json": 3
+  }
+ },
+ "묶음2/나": {
+  "discards": 1,
+  "전체 탐색 시도": 0,
+  ".. 사용": 1,
+  "금지 경로": 0,
+  "기타": 0,
+  "executed_flagged_calls": [],
+  "report_text_kept": 1,
+  "by_variant": {
+   "design_0B14.json": 1
+  }
+ },
+ "묶음3/가": {
+  "discards": 20,
+  "전체 탐색 시도": 17,
+  ".. 사용": 3,
+  "금지 경로": 0,
+  "기타": 0,
+  "executed_flagged_calls": [
+   {
+    "report_id": "ef0c7b06437e",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/ef0c7b06437e-t1/ws/.claude/skills/leakage-check; ls -R scripts | head; S=/srv/leakruns/ef0c7b06437e-t1/tmp/claude-0/-srv-leakruns-ef0c7b06437e-t1-ws/11e09ace-9678-4255-b0fc-7a580274c523/scratchpad; mkdir -p $S; python scripts/run_check.py ../../../design_48A5.json --data ../../../da"
+   },
+   {
+    "report_id": "3c616d816bd0",
+    "try": 4,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/3c616d816bd0-t4/ws/data; for f in *.csv.gz; do echo \"== $f\"; zcat $f | head -4; done; ls ../../ ; ls -R ../../ 2>/dev/null | grep -i leakcheck | head"
+   },
+   {
+    "report_id": "24f1e9cde2ae",
+    "try": 1,
+    "tool": "Glob",
+    "text": "/srv/leakruns/**/leakcheck/rules.py"
+   }
+  ],
+  "report_text_kept": 20,
+  "by_variant": {
+   "design_9672.json": 1,
+   "design_48A5.json": 1,
+   "design_800E.json": 6,
+   "design_EC59.json": 3,
+   "design_F872.json": 1,
+   "design_E0E0.json": 1,
+   "design_5350.json": 2,
+   "design_7F4F.json": 4,
+   "design_A1C2.json": 1
+  }
+ },
+ "묶음3/나": {
+  "discards": 1,
+  "전체 탐색 시도": 0,
+  ".. 사용": 1,
+  "금지 경로": 0,
+  "기타": 0,
+  "executed_flagged_calls": [
+   {
+    "report_id": "14824aa86d76",
+    "try": 1,
+    "tool": "Bash",
+    "text": "cd /srv/leakruns/14824aa86d76-t1/ws/data; cat > ../../tmp/claude-0/-srv-leakruns-14824aa86d76-t1-ws/e477bd89-867a-414b-b6a7-f4ad1b2de2a1/scratchpad/probe.py <<'EOF'\nimport pandas as pd, numpy as np\na=pd.read_csv('admissions.csv.gz',parse_dates=['admit_time','discharge_time']);l=pd.read_csv('labs.csv"
+   }
+  ],
+  "report_text_kept": 1,
+  "by_variant": {
+   "design_0B14.json": 1
+  }
+ }
+}
