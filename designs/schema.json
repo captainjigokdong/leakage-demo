@@ -1,0 +1,433 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "leakage-demo/design-schema/1",
+  "title": "예측 연구 설계서",
+  "description": "표 형식 EHR 예측 연구의 설계서. 시각은 '기준점+간격' 문자열(tp, tp-48h, admit+24h, discharge+30d, -inf, inf). 기준점은 예측 행이 속한 입원(index admission)의 입원·퇴원 시각과 예측 시점 tp. 구간은 (start, end] 반열린 구간.",
+  "type": "object",
+  "required": [
+    "design_id",
+    "design_type",
+    "tp",
+    "outcome",
+    "features",
+    "split"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "design_id": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string",
+      "description": "연구 질문 (자유 서술)"
+    },
+    "design_type": {
+      "enum": [
+        "fixed",
+        "dynamic"
+      ],
+      "description": "fixed: 입원당 예측 시점 하나 / dynamic: 입원 중 여러 랜드마크"
+    },
+    "tp": {
+      "type": "object",
+      "description": "예측 시점. anchor+offsets_h마다 예측 행 하나. anchor=admit이면 입원 중(tp < 퇴원)인 랜드마크만 예측 행이 된다.",
+      "required": [
+        "anchor",
+        "offsets_h"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "anchor": {
+          "enum": [
+            "admit",
+            "discharge"
+          ]
+        },
+        "offsets_h": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "required": [
+        "name",
+        "definition",
+        "source",
+        "window"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "definition": {
+          "enum": [
+            "kdigo_creatinine",
+            "next_admission"
+          ],
+          "description": "결과를 정하는 계산 (leakcheck.outcomes)"
+        },
+        "description": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "description": "결과를 정하는 행의 테이블"
+        },
+        "filter": {
+          "$ref": "#/$defs/filter"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "time_column": {
+          "type": "string"
+        },
+        "window": {
+          "$ref": "#/$defs/window",
+          "description": "결과 사건 창. 이 구간의 행이 결과를 정한다"
+        },
+        "reference_window": {
+          "$ref": "#/$defs/window",
+          "description": "결과 판정의 기준값(예: 기저 크레아티닌)을 읽는 구간. 결과 사건 창이 아니다"
+        },
+        "proxies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/proxy"
+          },
+          "description": "결과를 정하는 과정에서 생기는 기록 (규칙표 목록에 더해짐)"
+        },
+        "ascertainment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "by_stratum": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "결과 확인 강도 차이를 층별로 다루는 열 (층별 보고·층화 등)"
+            },
+            "method": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "index_time": {
+          "type": "string",
+          "default": "tp",
+          "description": "포함·제외를 정하는 기준 시점"
+        },
+        "inclusion": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/criterion"
+          }
+        },
+        "exclusion": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/criterion"
+          }
+        },
+        "subgroups": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "결과율·확인 강도를 따로 볼 하위 집단 열"
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/feature"
+      }
+    },
+    "split_unit": {
+      "type": "string",
+      "default": "patient",
+      "description": "독립 단위: index_row < admission < patient < family"
+    },
+    "split": {
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "분할에 쓰는 묶음 열 (index_id, admission_id, patient_id, family_id)"
+        },
+        "method": {
+          "enum": [
+            "group_holdout",
+            "group_kfold",
+            "random_rows",
+            "temporal"
+          ]
+        },
+        "test_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "n_folds": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "seed": {
+          "type": "integer"
+        }
+      }
+    },
+    "preprocessing": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "family": {
+          "type": "string"
+        },
+        "tuning": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "method": {
+              "type": "string"
+            },
+            "cv_key": {
+              "type": "string",
+              "description": "내부 교차검증의 묶음 열"
+            },
+            "fit_scope": {
+              "$ref": "#/$defs/fit_scope"
+            }
+          }
+        }
+      }
+    },
+    "attempts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "n_designs_tried": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_models_tried": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "correction": {
+          "type": "string",
+          "description": "다중 시도 보정 방법 (없으면 none)"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "filter": {
+      "type": "object",
+      "description": "열 → 허용 값 목록. 코드 열(icd_code, code)은 앞부분 일치",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      }
+    },
+    "scope": {
+      "enum": [
+        "patient",
+        "index_admission",
+        "prior_admissions",
+        "next_admission",
+        "patient_history"
+      ],
+      "description": "행을 어느 입원에서 가져오나. patient: 환자 정적 정보 / index_admission: 이번 입원 / prior_admissions: 이번 입원 전에 퇴원한 입원 / next_admission: 다음 입원 / patient_history: 그 환자의 모든 입원(미래 포함, 창으로 제한)"
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "string",
+          "default": "-inf"
+        },
+        "end": {
+          "type": "string",
+          "default": "inf"
+        }
+      }
+    },
+    "fit_scope": {
+      "enum": [
+        "train",
+        "train_fold",
+        "all",
+        "train+test",
+        "test"
+      ]
+    },
+    "rowset": {
+      "type": "object",
+      "description": "원본 테이블에서 행을 고르고(필터·범위·창) 집계하는 명세. 특징과 포함·제외 기준이 같이 쓴다",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "description": "원본 테이블. 없으면 출처 불명"
+        },
+        "column": {
+          "type": "string",
+          "description": "값 열 (없으면 테이블 기본 값 열)"
+        },
+        "filter": {
+          "$ref": "#/$defs/filter"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "time_column": {
+          "type": "string",
+          "description": "창을 적용할 시각 열"
+        },
+        "window": {
+          "$ref": "#/$defs/window"
+        },
+        "agg": {
+          "enum": [
+            "value",
+            "last",
+            "first",
+            "max",
+            "min",
+            "mean",
+            "count",
+            "any",
+            "kdigo_aki"
+          ]
+        },
+        "made_by": {
+          "type": "string",
+          "default": "leakcheck.features",
+          "description": "다른 값이면 출처 불명"
+        },
+        "fit_scope": {
+          "$ref": "#/$defs/fit_scope",
+          "description": "특징 계산에 데이터에서 추정한 값을 쓰면 그 범위"
+        }
+      }
+    },
+    "feature": {
+      "$ref": "#/$defs/rowset",
+      "required": [
+        "name"
+      ],
+      "unevaluatedProperties": false
+    },
+    "criterion": {
+      "$ref": "#/$defs/rowset",
+      "required": [
+        "name",
+        "op",
+        "value"
+      ],
+      "properties": {
+        "op": {
+          "enum": [
+            "==",
+            "!=",
+            ">=",
+            ">",
+            "<=",
+            "<",
+            "in",
+            "not_in"
+          ]
+        },
+        "value": {}
+      },
+      "unevaluatedProperties": false
+    },
+    "proxy": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "filter": {
+          "$ref": "#/$defs/filter"
+        },
+        "basis": {
+          "type": "string"
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "name",
+        "kind"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "description": "impute, scale, select, encode, resample, reduce, transform 등"
+        },
+        "stateless": {
+          "type": "boolean",
+          "default": false,
+          "description": "데이터에서 아무것도 추정하지 않는 단계 (예: 로그 변환)"
+        },
+        "fit_scope": {
+          "$ref": "#/$defs/fit_scope"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
