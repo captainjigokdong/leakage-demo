@@ -737,6 +737,79 @@ def status(out: Path) -> dict:
     return s
 
 
+def _discarded_attempts(out: Path, rid: str) -> list[tuple[int, Path]]:
+    d = out / "discarded" / rid
+    if not d.exists():
+        return []
+    res = []
+    for t in d.iterdir():
+        m = re.fullmatch(r"try(\d+)(?:_\d+)?", t.name)
+        if m and (t / "attempt.json").exists():
+            res.append((int(m.group(1)), t))
+    return sorted(res)
+
+
+def discard_report(out: Path) -> dict:
+    """묶음·조건별 오염 폐기 요약 (7단계 한계용). 사유 분류와, 걸린 호출 중 권한 거부되지 않고 실제 실행된 수.
+    '실제 실행'된 호출이 자기 실행 폴더 밖에 닿았는지는 작업 위치를 따라가야 해서 사람이 확인한다 (명령 문자열을 함께 남긴다)."""
+    sched = json.loads((out / "conditions.json").read_text(encoding="utf-8"))
+    rep: dict = {}
+    for rid, row in sched.items():
+        for k, d in _discarded_attempts(out, rid):
+            a = json.loads((d / "attempt.json").read_text(encoding="utf-8"))
+            if not any(r.startswith("오염") for r in a["reasons"]):
+                continue
+            key = f"묶음{row.get('batch', row['rep'])}/{row['condition']}"
+            r = rep.setdefault(key, {"discards": 0, "전체 탐색 시도": 0, ".. 사용": 0, "금지 경로": 0, "기타": 0,
+                                     "executed_flagged_calls": [], "report_text_kept": 0})
+            r["discards"] += 1
+            r["report_text_kept"] += isinstance(a.get("result_text"), str) and len(a["result_text"]) > 0
+            whys = {v["why"] for v in a["audit"]["violations"]}
+            if any("최상위" in w for w in whys):
+                r["전체 탐색 시도"] += 1
+            elif any(".." in w for w in whys):
+                r[".. 사용"] += 1
+            elif any("금지 경로" in w or "사본" in w for w in whys):
+                r["금지 경로"] += 1
+            else:
+                r["기타"] += 1
+            ev = parse_stream(gzip.decompress((d / "transcript.jsonl.gz").read_bytes()))
+            denied = {x.get("tool_use_id") for e in ev if e.get("type") == "result"
+                      for x in (e.get("permission_denials") or [])}
+            root = RUN_BASE / f"{rid}-t{k}"
+            rd = RunDir(root, root / "ws", root / "home", root / "cfg", root / "lchome" if row["condition"] == "가" else None)
+            for u in tool_uses(ev):
+                if u["id"] in denied:
+                    continue
+                for txt in _strings(u["input"]):
+                    if scan_text(txt, rd, row["condition"]):
+                        r["executed_flagged_calls"].append({"report_id": rid, "try": k, "tool": u["name"], "text": txt[:300]})
+                        break
+    return rep
+
+
+def export_first_attempts(out: Path, dest: Path) -> dict:
+    """민감도 분석용: 행마다 첫 번째 시도(폐기 포함)의 보고서를 채점기 입력 형식({"report_id", "variant", "text"})으로 모은다.
+    첫 시도가 폐기됐으면 discarded/<id>/try1의 결과 문장, 아니면 채택된 보고서. 본문은 읽지 않고 옮기기만 한다."""
+    sched = json.loads((out / "conditions.json").read_text(encoding="utf-8"))
+    dest.mkdir(parents=True, exist_ok=True)
+    n = {"from_discarded": 0, "from_reports": 0, "missing": 0}
+    for rid, row in sched.items():
+        first = [d for k, d in _discarded_attempts(out, rid) if k == 1 and d.name == "try1"]
+        text = None
+        if first:
+            text = json.loads((first[0] / "attempt.json").read_text(encoding="utf-8")).get("result_text")
+            n["from_discarded" if text is not None else "missing"] += 1
+        elif (out / "reports" / f"{rid}.json").exists():
+            text = json.loads((out / "reports" / f"{rid}.json").read_text(encoding="utf-8"))["text"]
+            n["from_reports"] += 1
+        else:
+            n["missing"] += 1
+        if text is not None:
+            _write_json(dest / f"{rid}.json", {"report_id": rid, "variant": row["variant"], "text": text})
+    return n
+
+
 def preflight(base: Path = RUN_BASE) -> list[str]:
     """실행 사용자가 저장소·세션 기록을 읽을 수 없는지 확인한다. 문제 목록을 돌려준다."""
     SHARED.mkdir(parents=True, exist_ok=True)
@@ -782,7 +855,7 @@ def preflight(base: Path = RUN_BASE) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["schedule", "preflight", "pilot", "main", "status"])
+    ap.add_argument("cmd", choices=["schedule", "preflight", "pilot", "main", "status", "discards", "first-attempts"])
     ap.add_argument("--limit", type=int)
     ap.add_argument("--workers", type=int, default=WORKERS)
     ap.add_argument("--model", default=MODEL)
@@ -792,6 +865,13 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     if a.cmd == "status":
         print(json.dumps(status(a.out or RUNS_OUT), ensure_ascii=False, indent=1))
+        return 0
+    if a.cmd == "discards":
+        print(json.dumps(discard_report(a.out or RUNS_OUT), ensure_ascii=False, indent=1))
+        return 0
+    if a.cmd == "first-attempts":
+        o = a.out or RUNS_OUT
+        print(json.dumps(export_first_attempts(o, o / "first_attempt_reports"), ensure_ascii=False))
         return 0
     if a.cmd == "preflight":
         probs = preflight()

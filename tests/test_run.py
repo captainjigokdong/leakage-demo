@@ -525,3 +525,23 @@ def test_no_checker_after_denial_recorded(tmp_path):
     assert meta["attempts"][-1]["no_checker_after_denial"] is True
     out2, meta2 = go(tmp_path / "2", "나", [(0, s.replace(b'leakage-check', b'zz'))])
     assert meta2["attempts"][-1]["no_checker_after_denial"] is False
+
+
+
+def test_discard_report_and_first_attempts(tmp_path):
+    bad = stream([], result="첫 시도 보고서", tools_used=[("Bash", {"command": "find / -name x"})])
+    row = {"condition": "나", "rep": 1, "batch": 1, "variant": run.variants()[0], "order": 0}
+    row2 = {**row, "order": 1}
+    out = tmp_path / "out"
+    run.ensure_schedule(out, {"abc123def456": row, "bbb123def456": row2})
+    run.run_row(out, "abc123def456", row, run.MODEL, FakeUsers(), launcher_from([(0, bad), (0, stream([]))]),
+                tmp_path / "runs", fake_checker)
+    run.run_row(out, "bbb123def456", row2, run.MODEL, FakeUsers(), launcher_from([(0, stream([]))]),
+                tmp_path / "runs", fake_checker)
+    rep = run.discard_report(out)["묶음1/나"]
+    assert rep["discards"] == 1 and rep["전체 탐색 시도"] == 1 and rep["report_text_kept"] == 1
+    assert len(rep["executed_flagged_calls"]) == 1          # 가짜 기록에는 거부 정보가 없으니 실행된 것으로 셈
+    n = run.export_first_attempts(out, tmp_path / "first")
+    assert n == {"from_discarded": 1, "from_reports": 1, "missing": 0}
+    rec = json.loads((tmp_path / "first" / "abc123def456.json").read_text())
+    assert set(rec) == {"report_id", "variant", "text"} and rec["text"] == "첫 시도 보고서"
