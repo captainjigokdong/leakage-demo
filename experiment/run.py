@@ -203,9 +203,22 @@ def agent_env(rd: RunDir, condition: str, base_env: dict[str, str] | None = None
     return env
 
 
-def agent_argv(text: str, model: str) -> list[str]:
+# 실행 사용자 (2026-10-03 사용자 결정): 따로 만든 OS 사용자로는 인증 오류가 나서, 이 세션과 같은 root로 실행한다.
+# 그래서 격리는 운영체제 수준이 아니라 권한 규칙(DENY_PATHS)과 사후 검사(audit, audit_scripts)에 의존한다.
+RUN_AS = "root"
+# Read·Glob·Grep이 보지 못하게 막는 경로 (권한 규칙. Read 규칙은 Glob·Grep에도 적용된다)
+DENY_PATHS = ("/home/user", "/root", "/mnt/user-data", "/tmp/claude-0")
+
+
+def deny_settings() -> dict:
+    rules = [f"{tool}(/{p}/**)" for p in DENY_PATHS for tool in ("Read", "Glob", "Grep")]
+    return {"permissions": {"deny": rules}}
+
+
+def agent_argv(text: str, model: str, settings: Path | None = None) -> list[str]:
+    extra = ["--settings", str(settings)] if settings else []
     return ["claude", "-p", text, "--model", model, "--output-format", "stream-json", "--verbose",
-            "--strict-mcp-config", "--disallowedTools", *DISALLOWED_TOOLS, *PERMISSION_ARGS]
+            "--strict-mcp-config", *extra, "--disallowedTools", *DISALLOWED_TOOLS, *PERMISSION_ARGS]
 
 
 class OsUser:
@@ -225,6 +238,23 @@ class OsUser:
         subprocess.run(["userdel", name], check=False, capture_output=True)
 
 
+class RootUser(OsUser):
+    """이 세션과 같은 root로 실행한다. 환경 변수는 agent_env가 정한 것만 넘긴다."""
+
+    def create(self, name: str, rd: RunDir) -> None:
+        rd.root.chmod(0o700)
+
+    def wrap(self, name: str, argv: list[str], env: dict[str, str]) -> list[str]:
+        return ["env", "-i", *(f"{k}={v}" for k, v in env.items()), *argv]
+
+    def remove(self, name: str, rd: RunDir) -> None:
+        pass
+
+
+def default_users() -> OsUser:
+    return RootUser() if RUN_AS == "root" else OsUser()
+
+
 def launch(argv: list[str], cwd: Path, timeout: int) -> tuple[int | None, bytes, bytes, float]:
     """(종료 코드 또는 시간 초과 None, stdout, stderr, 초)."""
     t0 = time.monotonic()
@@ -242,6 +272,14 @@ def launch(argv: list[str], cwd: Path, timeout: int) -> tuple[int | None, bytes,
 # ---------------------------------------------------------------- 실행 기록 분석
 
 PATH_RE = re.compile(r"(?<![\w.~$])(/[A-Za-z0-9_.\-/]+)")
+# 상위 폴더 탐색: ".." 경로 조각
+DOTDOT_RE = re.compile(r"""(?:^|[\s'"=(,:/])\.\.(?=/|['"\s),;]|$)""", re.M)
+# 최상위 폴더 자체를 가리킴 (목록 조회·전체 순회): "/"를 따옴표로 쓰거나 ls/find/du/tree의 인자로 씀
+ROOT_RE = re.compile(r"""(['"])/[*?]*\1|\b(?:ls|find|tree|du)\s+(?:-\S+\s+)*/(?=[\s;|&)]|$)""", re.M)
+TOP_DIRS = ("/home", "/root", "/mnt", "/srv", "/tmp", "/var", "/etc", "/opt", "/usr", "/proc", "/media", "/run")
+TOP_RE = re.compile(r"""(?<![\w.\-/])(""" + "|".join(map(re.escape, TOP_DIRS)) + r""")/?[*?]*(?=['"\s);,|&]|$)""", re.M)
+# 홈·사용자 폴더 확장 (실행 폴더 밖으로 나가는 다른 길)
+HOMEX_RE = re.compile(r"""expanduser\(\s*['"]~\w|['"]~(?:root|user)\b|Path\.home\(\)\.parent""")
 
 
 def parse_stream(raw: bytes) -> list[dict]:
@@ -277,23 +315,37 @@ def _strings(x) -> list[str]:
     return []
 
 
-def audit(events: list[dict], rd: RunDir, condition: str) -> dict:
-    """도구 호출 입력에 나타난 경로·도구를 검사한다 (오염 = 허용되지 않은 접근 시도. 실패한 시도도 센다)."""
-    uses = tool_uses(events)
+def scan_text(text: str, rd: RunDir, condition: str) -> list[dict]:
+    """명령·스크립트 문자열 하나에서 금지 경로, 상위 폴더 탐색, 최상위 폴더 조회를 찾는다."""
     own = str(rd.root)
     forbidden = [*FORBIDDEN_PREFIXES, str(RUN_BASE)]
+    hits = []
+    for m in PATH_RE.findall(text):
+        p = m.rstrip(".")
+        inside = p == own or p.startswith(own + "/")
+        if inside and condition != "가" and (p + "/").startswith(own + "/lchome/"):
+            hits.append({"path": p, "why": "(나)에서 점검기 사본 경로"})
+        elif not inside and any(p == f or p.startswith(f + "/") for f in forbidden):
+            hits.append({"path": p, "why": "실행 폴더 밖 금지 경로"})
+    for rx, why in ((DOTDOT_RE, "상위 폴더 탐색 (..)"), (ROOT_RE, "최상위 폴더 조회 (/)"),
+                    (TOP_RE, "최상위 폴더 조회"), (HOMEX_RE, "다른 사용자 홈 확장")):
+        for m in rx.finditer(text):
+            hits.append({"path": m.group(0).strip(), "why": why})
+    return hits
+
+
+def audit(events: list[dict], rd: RunDir, condition: str) -> dict:
+    """도구 호출 입력 전부(경로 인자, Bash 명령, Write·Edit로 쓴 스크립트 내용)를 검사한다.
+    오염 = 허용되지 않은 접근 시도. 권한 규칙에 거부된 시도도 센다."""
+    uses = tool_uses(events)
     hits = []
     for u in uses:
         if u["name"] in DISALLOWED_TOOLS:
             hits.append({"tool": u["name"], "path": None, "why": "꺼 둔 도구"})
         for s in _strings(u["input"]):
-            for m in PATH_RE.findall(s):
-                p = m.rstrip(".")
-                inside = p == own or p.startswith(own + "/")
-                if inside and condition != "가" and (p + "/").startswith(own + "/lchome/"):
-                    hits.append({"tool": u["name"], "path": p, "why": "(나)에서 점검기 사본 경로"})
-                elif not inside and any(p == f or p.startswith(f + "/") for f in forbidden):
-                    hits.append({"tool": u["name"], "path": p, "why": "실행 폴더 밖 금지 경로"})
+            hits += [{"tool": u["name"], **h} for h in scan_text(s, rd, condition)]
+        if u["name"] in ("Glob", "Grep", "Read") and u["input"].get("path") == "/":
+            hits.append({"tool": u["name"], "path": "/", "why": "최상위 폴더 조회 (/)"})
     bash = [u["input"].get("command", "") for u in uses if u["name"] == "Bash"]
     return {
         "tool_counts": {n: sum(u["name"] == n for u in uses) for n in sorted({u["name"] for u in uses})},
@@ -304,6 +356,16 @@ def audit(events: list[dict], rd: RunDir, condition: str) -> dict:
                              for u in uses),
         "violations": hits,
     }
+
+
+def audit_scripts(rd: RunDir, condition: str) -> list[dict]:
+    """실행 뒤 작업 폴더에 남은 스크립트(.py, .sh) 내용도 같은 방식으로 검사한다 (스킬 사본은 제외)."""
+    hits = []
+    for f in sorted(rd.ws.rglob("*")):
+        if f.is_file() and f.suffix in (".py", ".sh") and ".claude" not in f.relative_to(rd.ws).parts:
+            text = f.read_text(encoding="utf-8", errors="replace")
+            hits += [{"tool": f"file:{f.relative_to(rd.ws)}", **h} for h in scan_text(text, rd, condition)]
+    return hits
 
 
 def init_info(events: list[dict]) -> dict:
@@ -383,13 +445,16 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
     text = prompt.render(row["variant"], "data")
     users.create(name, rd)
     try:
-        argv = users.wrap(name, agent_argv(text, model), agent_env(rd, row["condition"]))
+        settings = rd.root / "settings.json"
+        settings.write_text(json.dumps(deny_settings()), encoding="utf-8")
+        argv = users.wrap(name, agent_argv(text, model, settings), agent_env(rd, row["condition"]))
         code, out, err, secs = launcher(argv, rd.ws, TIMEOUT_S)
     finally:
         users.remove(name, rd)
     events = parse_stream(out)
     init, res = init_info(events), result_info(events)
     aud = audit(events, rd, row["condition"])
+    aud["violations"] += audit_scripts(rd, row["condition"])
     changed = inputs_changed(rd)
     reasons = []
     if code is None:
@@ -502,7 +567,7 @@ def run_all(out: Path, sched: dict[str, dict], model: str, workers: int = WORKER
             users: OsUser | None = None, launcher=launch, base: Path = RUN_BASE, checker=run_checker) -> dict:
     """끝나지 않은 행을 순서대로 돌린다. 한도에 걸리면 새 행을 시작하지 않고 멈춘다.
     돌려주는 값: {"results": [...], "limit_reached": bool}"""
-    users = users or OsUser()
+    users = users or default_users()
     todo = pending(out, sched)[:limit]
     lock = threading.Lock()
     results, stop = [], threading.Event()
@@ -563,7 +628,7 @@ def status(out: Path) -> dict:
     sched = json.loads((out / "conditions.json").read_text(encoding="utf-8"))
     s = {c: {"planned": 0, "done": 0, "failed": 0, "retries": 0, "retry_reasons": {}, "checker_invoked": 0,
              "findings_block": 0, "seconds": [], "cost_usd": 0.0,
-             "permission_denials": 0, "checker_denied": 0, "tokens": {"input": 0, "cache_creation": 0, "cache_read": 0, "output": 0}} for c in CONDITIONS}
+             "permission_denials": 0, "checker_denied": 0, "contamination_discarded": 0, "tokens": {"input": 0, "cache_creation": 0, "cache_read": 0, "output": 0}} for c in CONDITIONS}
     for rid, row in sched.items():
         c = s[row["condition"]]
         c["planned"] += 1
@@ -581,6 +646,7 @@ def status(out: Path) -> dict:
         c["permission_denials"] += last.get("permission_denials", {}).get("count", 0)
         c["checker_denied"] += last.get("permission_denials", {}).get("checker_denied", 0)
         for t in meta["attempts"]:
+            c["contamination_discarded"] += t["status"] == "fail" and any(r.startswith("오염") for r in t["reasons"])
             c["seconds"].append(t["seconds"])
             c["cost_usd"] += (t["result"] or {}).get("total_cost_usd") or 0
             for mu in ((t["result"] or {}).get("modelUsage") or {}).values():
@@ -607,6 +673,8 @@ def preflight(base: Path = RUN_BASE) -> list[str]:
     for d in HARDEN_DIRS:
         if d.exists():
             d.chmod(d.stat().st_mode & ~0o007)
+    if RUN_AS == "root":
+        return []      # root 실행: 운영체제 수준 격리가 없으므로 확인할 것이 없다 (권한 규칙 + 사후 검사)
     name = "lrpreflight"
     rd = prepare_run(base, "preflight", variants()[0], "나")
     users = OsUser()

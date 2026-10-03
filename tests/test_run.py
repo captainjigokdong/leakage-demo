@@ -309,3 +309,67 @@ def test_batches_resume_after_limit(tmp_path):
     assert len(run.pending(out, sched)) == 3                   # 묶음 2에서 1개만 끝나고 멈춤
     assert run.run_batches(out, sched, run.MODEL, 1, commit=False, **kw) is True
     assert run.pending(out, sched) == []
+
+
+# ---------------------------------------------------------------- root 실행: 권한 규칙과 넓힌 오염 검사
+
+def test_root_mode_and_deny_settings():
+    assert run.RUN_AS == "root" and isinstance(run.default_users(), run.RootUser)
+    rules = run.deny_settings()["permissions"]["deny"]
+    for p in ("/home/user", "/root", "/mnt/user-data"):
+        for t in ("Read", "Glob", "Grep"):
+            assert f"{t}(/{p}/**)" in rules
+    argv = run.RootUser().wrap("x", run.agent_argv("t", run.MODEL, Path("/s.json")), {"A": "1"})
+    assert argv[:3] == ["env", "-i", "A=1"] and "--settings" in argv and "setpriv" not in argv
+
+
+@pytest.mark.parametrize("cmd", [
+    "python3 -c \"import os; print(os.listdir('/'))\"",
+    "python -c \"import os; [print(r) for r in os.walk('/home')]\"",
+    "python3 -c \"open('../home/x')\"",
+    "python3 script.py ..",
+    "python3 -c \"import glob; print(glob.glob('/srv/*'))\"",
+    "python3 -c \"print(open('/root/.claude/x').read())\"",
+    "python3 -c \"import os; os.path.expanduser('~root')\"",
+    "python3 -c \"from pathlib import Path; print(list(Path('/mnt').iterdir()))\"",
+])
+def test_broadened_audit_flags(tmp_path, cmd):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash",
+          "input": {"command": cmd}}]}}]
+    assert run.audit(ev, rd, "나")["violations"], cmd
+
+
+@pytest.mark.parametrize("cmd", [
+    "python3 -c \"import pandas as pd; df = pd.read_csv('data/labs.csv.gz'); print(df.x / 2)\"",
+    "python .claude/skills/leakage-check/scripts/run_check.py design_0B14.json --data data",
+    "python3 -c \"print(1/3, 'a/b')\"",
+    "python3 -c \"x = [1, 2]; print(x[...])\"",
+])
+def test_broadened_audit_allows_normal_work(tmp_path, cmd):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "가")
+    ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash",
+          "input": {"command": cmd}}]}}]
+    assert run.audit(ev, rd, "가")["violations"] == [], cmd
+
+
+def test_written_script_content_audited(tmp_path):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Write",
+          "input": {"file_path": f"{rd.ws}/s.py", "content": "import os\nfor r in os.walk('/'):\n    pass\n"}}]}}]
+    assert run.audit(ev, rd, "나")["violations"]
+    (rd.ws / "t.py").write_text("print(open('/home/user/leakage-demo/CLAUDE.md').read())\n")
+    assert run.audit_scripts(rd, "나")
+    (rd.ws / "t.py").write_text("import pandas\n")
+    assert run.audit_scripts(rd, "나") == []
+
+
+def test_contamination_discards_counted(tmp_path):
+    bad = stream([], tools_used=[("Bash", {"command": "python3 -c \"import os; os.listdir('/')\""})])
+    row = {"condition": "나", "rep": 1, "batch": 1, "variant": run.variants()[0], "order": 0}
+    out = tmp_path / "out"
+    run.ensure_schedule(out, {"abc123def456": row})
+    run.run_row(out, "abc123def456", row, run.MODEL, FakeUsers(), launcher_from([(0, bad), (0, stream([]))]),
+                tmp_path / "runs", fake_checker)
+    st = run.status(out)
+    assert st["나"]["contamination_discarded"] == 1 and st["나"]["done"] == 1
