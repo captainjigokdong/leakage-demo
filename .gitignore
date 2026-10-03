@@ -6,5 +6,5 @@ sealed/*
 *.plain.*
 __pycache__/
 .pytest_cache/
-experiment/runs/
+# experiment/runs/, experiment/pilot/은 6단계부터 커밋한다 (보고서·실행 기록 gzip)
 .venv/

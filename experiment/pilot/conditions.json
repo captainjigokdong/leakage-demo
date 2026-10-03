@@ -1,0 +1,26 @@
+{
+ "278c665bce74": {
+  "condition": "가",
+  "rep": 1,
+  "variant": "design_4BE0.json",
+  "order": 0
+ },
+ "8dab1848f9d0": {
+  "condition": "나",
+  "rep": 1,
+  "variant": "design_4BE0.json",
+  "order": 1
+ },
+ "059d859b0f5e": {
+  "condition": "나",
+  "rep": 1,
+  "variant": "design_EC59.json",
+  "order": 2
+ },
+ "1c9b176c645e": {
+  "condition": "가",
+  "rep": 1,
+  "variant": "design_EC59.json",
+  "order": 3
+ }
+}
