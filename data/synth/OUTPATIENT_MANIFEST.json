@@ -1,0 +1,8 @@
+{
+  "outpatient_version": "1",
+  "seed": 20261003,
+  "built_from": "admissions.csv.gz, patients.csv.gz (MANIFEST.json)",
+  "file": "outpatient_visits.csv.gz",
+  "rows": 11861,
+  "sha256_csv": "f1cd69b5fdd1d3fb0866feb9d2e1d140e235c6597815052ae2b093c496083bb8"
+}
