@@ -18,7 +18,7 @@ Cedars-Sinai(Moore 연구실) 3주 연수 계획을 **연수 전에 합성 데�
 
 ## 현재 단계
 
-**5단계: 채점 규칙과 성공 기준 고정** (4단계 완료 2026-10-03: 맹검 변형 20개 `designs/variants/`, 정답표 `sealed/answer_key.enc`. `skill-frozen` 태그 이후 `leakcheck/`, `skill_src/` 수정 금지. 완료 시 이 줄을 갱신하고 커밋)
+**6단계: (가)/(나) 실행** (5단계 완료 2026-10-03: 채점 규칙 `experiment/scoring_rules.md`, 채점기 `experiment/grader.py`, 지시문 `experiment/agent_prompt.md`, 성공 기준 `docs/success_criteria.md` 고정. 이 세 파일은 해시로 잠겨 있어 수정 금지, 버그는 `docs/known_issues.md`에 기록. `criteria-locked` 태그는 사용자가 GitHub에서 만든다. `skill-frozen` 이후 `leakcheck/`, `skill_src/` 수정 금지. 완료 시 이 줄을 갱신하고 커밋)
 
 ## 절대 규칙
 
