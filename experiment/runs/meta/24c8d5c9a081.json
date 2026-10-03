@@ -1,0 +1,157 @@
+{
+ "report_id": "24c8d5c9a081",
+ "status": "done",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "ok",
+   "reasons": [],
+   "exit_code": 0,
+   "seconds": 115.4,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/24c8d5c9a081-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 8,
+    "duration_ms": 113567,
+    "total_cost_usd": 0.425026,
+    "usage": {
+     "input_tokens": 14,
+     "cache_creation_input_tokens": 22250,
+     "cache_read_input_tokens": 117650,
+     "output_tokens": 11172,
+     "output_tokens_details": {
+      "thinking_tokens": 2406
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 22250,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 2361,
+       "cache_read_input_tokens": 24957,
+       "cache_creation_input_tokens": 3254,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 3254
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 14,
+      "outputTokens": 11172,
+      "cacheReadInputTokens": 117650,
+      "cacheCreationInputTokens": 22250,
+      "webSearchRequests": 0,
+      "costUSD": 0.425026,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2406,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01PyHGF9BiSZ4582vxvAi1kX",
+      "tool_input": {
+       "command": "mkdir -p /srv/leakruns/24c8d5c9a081-t1/ws/prep_D568; cat > /srv/leakruns/24c8d5c9a081-t1/ws/prep_D568/prepare.py <<'EOF'\n\"\"\"design_D568 모델링 준비: 코호트·결과·특성·분할 생성 (학습/성능 계산 없음).\n설계서와 다른 잠정 처리(확인 필요):\n  - cr_last: collect_time 대신 report_time <= 퇴원으로 제한 (퇴원 후 보고 결과 누출 방지)\n  - dx_*, n_dx: 색인 입원의 진단만 사용 (다른/미래 입원 진단 혼입 방지)\n  - 분할 키: family_id(없으면 patient_id) 기준 그룹 홀드아웃\n  - 데이터 종료 30일 이내 퇴원은 censored_followup 플래그로 표시 (제외 여부 확인 필요)\n\"\"\"\nimport json, pathlib\nimport numpy as np, pandas as pd\nfrom sklearn.model_selection import GroupShuffleSplit\n\nROOT = pathlib.Path(__file__).resolve().parents[1]\nD = ROOT / \"data\"\nOUT = pathlib.Path(__file__).resolve().parent\ndesign = json.loads((ROOT / \"design_D568.json\").read_text())\n\nP = pd.read_csv(D / \"patients.csv.gz\")\nA = pd.read_csv(D / \"admissions.csv.gz\", parse_dates=[\"admit_time\", \"discharge_time\"])\nL = pd.read_csv(D / \"labs.csv.gz\", parse_dates=[\"collect_time\", \"report_time\"])\nO = pd.read_csv(D / \"orders.csv.gz\", parse_dates=[\"order_time\"])\nDX = pd.read_csv(D / \"diagnoses.csv.gz\")\n\nA = A.sort_values([\"patient_id\", \"admit_time\"]).reset_index(drop=True)\nA[\"tp\"] = A[\"discharge_time\"]\nA[\"next_admit\"] = A.groupby(\"patient_id\")[\"admit_time\"].shift(-1)\nA[\"readmit_30d\"] = ((A[\"next_admit\"] > A[\"tp\"]) & (A[\"next_admit\"] <= A[\"tp\"] + pd.Timedelta(\"30D\"))).astype(int)\ndata_end = max(A[\"discharge_time\"].max(), A[\"admit_time\"].max())\nA[\"censored_followup\"] = (A[\"tp\"] + pd.Timedelta(\"30D\") > data_end).astype(int)\nA[\"n_prior_adm\"] = A.groupby(\"patient_id\").cumcount()\nA[\"los_h\"] = (A[\"discharge_time\"] - A[\"admit_time\"]).dt.total_seconds() / 3600\n\n# 코호트\nC = A.merge(P, on=\"patient_id\", how=\"left\")\nn0 = len(C)\nC = C[C[\"age\"] >= 18]; n1 = len(C)\nC = C[C[\"discharge_status\"] != \"died\"]; n2 = len(C)\n\nwin = C[[\"admission_id\", \"admit_time\", \"tp\"]]\ndef lab_agg(test, tcol, agg):\n    s = L[L.test == test].merge(win, on=\"admission_id\")\n    s = s[(s[tcol] >= s.admit_time) & (s[tcol] <= s.tp)].sort_values(tcol)\n    return s.groupby(\"admission_id\")[\"value\"].agg(agg)\n\nC = C.set_index(\"admission_id\")\nC[\"hgb_min\"] = lab_agg(\"hemoglobin\", \"report_time\", \"min\")\nC[\"cr_last\"] = lab_agg(\"creatinine\", \"report_time\", \"last\")\no = O[O.order_type == \"dialysis_order\"].merge(win, on=\"admission_id\")\no = o[(o.order_time >= o.admit_time) & (o.order_time <= o.tp)]\nC[\"dialysis_ordered\"] = C.index.isin(o.admission_id).astype(int)\ncode3 = DX.icd_code.str[:3]\nC[\"dx_ckd\"] = C.index.isin(DX.admission_id[code3 == \"N18\"]).astype(int)\nC[\"dx_chf\"] = C.index.isin(DX.admission_id[code3 == \"I50\"]).astype(int)\nC[\"n_dx\"] = DX.groupby(\"admission_id\").size().reindex(C.index).fillna(0).astype(int)\nC = C.reset_index()\n\n# 분할 (가족 단위)\nC[\"split_group\"] = C[\"family_id\"].fillna(C[\"patient_id\"])\ngss = GroupShuffleSplit(n_splits=1, test_size=design[\"split\"][\"test_fraction\"], random_state=design[\"split\"][\"seed\"])\ntr, te = next(gss.split(C, groups=C[\"split_group\"]))\nC[\"split\"] = \"train\"; C.loc[C.index[te], \"split\"] = \"test\"\n\nfeats = [f[\"name\"] for f in design[\"features\"]]\ncols = [\"admission_id\", \"patient_id\", \"family_id\", \"split_group\", \"tp\", \"split\",\n        \"readmit_30d\", \"censored_followup\"] + feats\nC[cols].to_csv(OUT / \"analysis_table.csv\", index=False)\n\nsummary = {\n    \"cohort_flow\": {\"admissions\": n0, \"adult\": n1, \"excl_died\": n2},\n    \"split_n\": C[\"split\"].value_counts().to_dict(),\n    \"outcome_rate_by_split\": C.groupby(\"split\")[\"readmit_30d\"].mean().round(4).to_dict(),\n    \"outcome_by_discharge_status\": C.groupby(\"discharge_status\")[\"readmit_30d\"].agg([\"size\", \"mean\"]).round(4).to_dict(),\n    \"outcome_by_unit\": C.groupby(\"unit\")[\"readmit_30d\"].agg([\"size\", \"mean\"]).round(4).to_dict(),\n    \"censored_followup_n\": int(C[\"censored_followup\"].sum()),\n    \"missing_rate\": C[feats].isna().mean().round(4).to_dict(),\n    \"group_overlap_patient\": len(set(C.patient_id[C.split == \"train\"]) & set(C.patient_id[C.split == \"test\"])),\n    \"group_overlap_family\": len(set(C.family_id[C.split == \"train\"].dropna()) & set(C.family_id[C.split == \"test\"].dropna())),\n}\n(OUT / \"prep_summary.json\").write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str))\nprint(json.dumps(summary, ensure_ascii=False, indent=2, default=str))\nEOF\ncd /srv/leakruns/24c8d5c9a081-t1/ws/prep_D568 && python3 prepare.py"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 6,
+     "Write": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": []
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 1,
+    "by_tool": {
+     "Bash": 1
+    },
+    "checker_denied": 0,
+    "commands": [
+     "mkdir -p /srv/leakruns/24c8d5c9a081-t1/ws/prep_D568; cat > /srv/leakruns/24c8d5c9a081-t1/ws/prep_D568/prepare.py <<'EOF'\n\"\"\"design_D568 모델링 준비: 코호트·결과·특성·분할 생성 (학습/성능 계산 없음).\n설계서와 다른 잠정 처리(확인 필요):\n  -"
+    ]
+   },
+   "no_checker_after_denial": false
+  }
+ ],
+ "retries": 0,
+ "retry_reasons": []
+}
