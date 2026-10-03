@@ -1,0 +1,165 @@
+{
+ "report_id": "8dab1848f9d0",
+ "status": "done",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "ok",
+   "reasons": [],
+   "exit_code": 0,
+   "seconds": 419.5,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/8dab1848f9d0-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 16,
+    "duration_ms": 417931,
+    "total_cost_usd": 0.5362904,
+    "usage": {
+     "input_tokens": 30,
+     "cache_creation_input_tokens": 26170,
+     "cache_read_input_tokens": 314352,
+     "output_tokens": 13197,
+     "output_tokens_details": {
+      "thinking_tokens": 2884
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 26170,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1720,
+       "cache_read_input_tokens": 28965,
+       "cache_creation_input_tokens": 3166,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 3166
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 30,
+      "outputTokens": 13197,
+      "cacheReadInputTokens": 314352,
+      "cacheCreationInputTokens": 26170,
+      "webSearchRequests": 0,
+      "costUSD": 0.5362904,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2884,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01Y2oxNxM3YsPVQayoCEBB28",
+      "tool_input": {
+       "command": "cd /srv/leakruns/8dab1848f9d0-t1/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01KfLLbYZt3uMS4x7K8dGh28",
+      "tool_input": {
+       "command": "python3 -c \"\nimport pandas as pd\nd=pd.read_csv('prep/tp_dataset.csv.gz')\nprint(d.groupby('offset_h')[['in_hospital_at_tp','full_outcome_window_in_hospital','aki_known_by_tp']].mean())\nc=d[d.in_cohort_as_designed]; print('designed cohort',len(c),'post-discharge rows',(~c.in_hospital_at_tp).sum(),'label rate',c.aki_48h.mean())\nprint('label among post-discharge', c[~c.in_hospital_at_tp].aki_48h.mean())\nh=d[d.in_cohort_with_in_hospital]; print('in-hosp cohort',len(h),h.aki_48h.mean())\nprint(h.groupby('unit').agg(n=('aki_48h','size'),rate=('aki_48h','mean'),ncr=('n_cr_outcome_window','mean')))\nprint(h.groupby('offset_h').aki_48h.agg(['size','mean']))\nprint(h.groupby('split').agg(n=('aki_48h','size'),rate=('aki_48h','mean'),pts=('patient_id','nunique')))\n# patient overlap check\np=h.groupby('patient_id').split.nunique(); print('patients in both',(p>1).sum())\n# naive family split w/o fallback: NaN group size\nprint('rows with family NaN', h.family_id.isna().mean(), 'patients', h[h.family_id.isna()].patient_id.nunique())\nprint(h[['cr_min_adm','cr_max_48h','cr_last','bun_last','hgb_min','k_last']].isna().mean())\n\""
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 9,
+     "Read": 2,
+     "Write": 4
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": []
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 2,
+    "by_tool": {
+     "Bash": 2
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/8dab1848f9d0-t1/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done",
+     "python3 -c \"\nimport pandas as pd\nd=pd.read_csv('prep/tp_dataset.csv.gz')\nprint(d.groupby('offset_h')[['in_hospital_at_tp','full_outcome_window_in_hospital','aki_known_by_tp']].mean())\nc=d[d.in_cohort_"
+    ]
+   }
+  }
+ ],
+ "retries": 0,
+ "retry_reasons": []
+}
