@@ -761,8 +761,9 @@ def discard_report(out: Path) -> dict:
                 continue
             key = f"묶음{row.get('batch', row['rep'])}/{row['condition']}"
             r = rep.setdefault(key, {"discards": 0, "전체 탐색 시도": 0, ".. 사용": 0, "금지 경로": 0, "기타": 0,
-                                     "executed_flagged_calls": [], "report_text_kept": 0})
+                                     "executed_flagged_calls": [], "report_text_kept": 0, "by_variant": {}})
             r["discards"] += 1
+            r["by_variant"][row["variant"]] = r["by_variant"].get(row["variant"], 0) + 1
             r["report_text_kept"] += isinstance(a.get("result_text"), str) and len(a["result_text"]) > 0
             whys = {v["why"] for v in a["audit"]["violations"]}
             if any("최상위" in w for w in whys):
