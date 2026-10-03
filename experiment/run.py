@@ -657,8 +657,11 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("격리 확인 실패:\n" + "\n".join(probs))
     prompt.text()
     finished = run_batches(out, sched, a.model, a.workers, commit=not a.no_commit, limit=a.limit)
-    print(json.dumps(status(out), ensure_ascii=False, indent=1))
-    return 0 if finished else 3
+    st = status(out)
+    print(json.dumps(st, ensure_ascii=False, indent=1))
+    if not finished:
+        return 3
+    return 1 if any(c["failed"] for c in st.values()) else 0
 
 
 if __name__ == "__main__":
