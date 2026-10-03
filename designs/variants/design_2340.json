@@ -1,0 +1,251 @@
+{
+  "design_id": "design_2340",
+  "design_type": "dynamic",
+  "question": "입원 중 매일(입원 후 24h~7일), 앞으로 48시간 안에 KDIGO 크레아티닌 기준 AKI가 생길지 예측",
+  "tp": {
+    "anchor": "admit",
+    "offsets_h": [
+      24,
+      48,
+      72,
+      96,
+      120,
+      144,
+      168
+    ]
+  },
+  "outcome": {
+    "name": "aki_48h",
+    "definition": "kdigo_creatinine",
+    "description": "결과 창 안에 채취된 크레아티닌이 KDIGO 기준(48h 내 +0.3 mg/dL 또는 7일 내 최솟값의 1.5배)을 만족",
+    "source": "labs",
+    "filter": {
+      "test": [
+        "creatinine"
+      ]
+    },
+    "scope": "index_admission",
+    "time_column": "collect_time",
+    "window": {
+      "start": "tp",
+      "end": "tp+48h"
+    },
+    "reference_window": {
+      "start": "tp-168h",
+      "end": "tp"
+    },
+    "ascertainment": {
+      "by_stratum": [
+        "unit"
+      ],
+      "method": "ICU·병동 결과율과 측정 빈도를 층별로 보고"
+    }
+  },
+  "cohort": {
+    "index_time": "tp",
+    "inclusion": [
+      {
+        "name": "adult",
+        "source": "patients",
+        "column": "age",
+        "agg": "value",
+        "op": ">=",
+        "value": 18
+      }
+    ],
+    "exclusion": [
+      {
+        "name": "aki_known_by_tp",
+        "source": "labs",
+        "filter": {
+          "test": [
+            "creatinine"
+          ]
+        },
+        "time_column": "report_time",
+        "window": {
+          "start": "admit",
+          "end": "tp"
+        },
+        "agg": "kdigo_aki",
+        "op": "==",
+        "value": true
+      }
+    ],
+    "subgroups": [
+      "unit"
+    ]
+  },
+  "features": [
+    {
+      "name": "cr_min_adm",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "creatinine"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "min"
+    },
+    {
+      "name": "k_last",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "potassium"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "last"
+    },
+    {
+      "name": "n_cr",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "creatinine"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "count"
+    },
+    {
+      "name": "age",
+      "source": "patients",
+      "column": "age",
+      "agg": "value"
+    },
+    {
+      "name": "cr_last",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "creatinine"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "last"
+    },
+    {
+      "name": "sex",
+      "source": "patients",
+      "column": "sex",
+      "agg": "value"
+    },
+    {
+      "name": "unit",
+      "source": "admissions",
+      "column": "unit",
+      "agg": "value"
+    },
+    {
+      "name": "hgb_min",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "hemoglobin"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "min"
+    },
+    {
+      "name": "cr_max_adm",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "creatinine"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "discharge"
+      },
+      "agg": "max"
+    },
+    {
+      "name": "bun_last",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "bun"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "last"
+    },
+    {
+      "name": "cr_max_48h",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "creatinine"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "tp-48h",
+        "end": "tp"
+      },
+      "agg": "max"
+    }
+  ],
+  "split_unit": "family",
+  "split": {
+    "key": "family_id",
+    "method": "group_holdout",
+    "test_fraction": 0.3,
+    "seed": 20261002
+  },
+  "preprocessing": [
+    {
+      "name": "median_impute",
+      "kind": "impute",
+      "fit_scope": "train"
+    },
+    {
+      "name": "standardize",
+      "kind": "scale",
+      "fit_scope": "train"
+    }
+  ],
+  "model": {
+    "family": "logistic_regression",
+    "tuning": {
+      "method": "group_kfold",
+      "cv_key": "family_id",
+      "fit_scope": "train"
+    }
+  },
+  "attempts": {
+    "n_designs_tried": 1,
+    "n_models_tried": 1,
+    "correction": "none"
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "design_id": "design_E6D6",
+  "design_type": "fixed",
+  "question": "퇴원 시각에, 30일 안에 다시 입원할지 예측",
+  "tp": {
+    "anchor": "discharge",
+    "offsets_h": [
+      0
+    ]
+  },
+  "outcome": {
+    "name": "readmit_30d",
+    "definition": "next_admission",
+    "description": "퇴원 후 30일 안에 같은 환자의 입원이 시작됨",
+    "source": "admissions",
+    "scope": "next_admission",
+    "time_column": "admit_time",
+    "window": {
+      "start": "tp",
+      "end": "tp+30d"
+    },
+    "ascertainment": {
+      "by_stratum": [
+        "discharge_status"
+      ],
+      "method": "퇴원처(자택·전원)별 재입원율과 추적 가능 범위를 층별로 보고"
+    }
+  },
+  "cohort": {
+    "index_time": "tp",
+    "inclusion": [
+      {
+        "name": "adult",
+        "source": "patients",
+        "column": "age",
+        "agg": "value",
+        "op": ">=",
+        "value": 18
+      }
+    ],
+    "exclusion": [
+      {
+        "name": "died_in_hospital",
+        "source": "admissions",
+        "column": "discharge_status",
+        "agg": "value",
+        "op": "==",
+        "value": "died"
+      }
+    ],
+    "subgroups": [
+      "unit"
+    ]
+  },
+  "features": [
+    {
+      "name": "unit",
+      "source": "admissions",
+      "column": "unit",
+      "agg": "value"
+    },
+    {
+      "name": "cr_last",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "creatinine"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "last"
+    },
+    {
+      "name": "n_dx",
+      "source": "diagnoses",
+      "agg": "count"
+    },
+    {
+      "name": "dialysis_ordered",
+      "source": "orders",
+      "filter": {
+        "order_type": [
+          "dialysis_order"
+        ]
+      },
+      "time_column": "order_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "any"
+    },
+    {
+      "name": "dx_ckd",
+      "source": "diagnoses",
+      "filter": {
+        "icd_code": [
+          "N18"
+        ]
+      },
+      "agg": "any"
+    },
+    {
+      "name": "discharge_status",
+      "source": "admissions",
+      "column": "discharge_status",
+      "agg": "value"
+    },
+    {
+      "name": "los_h",
+      "source": "admissions",
+      "column": "length_of_stay_h",
+      "agg": "value"
+    },
+    {
+      "name": "sex",
+      "source": "patients",
+      "column": "sex",
+      "agg": "value"
+    },
+    {
+      "name": "dx_chf",
+      "source": "diagnoses",
+      "filter": {
+        "icd_code": [
+          "I50"
+        ]
+      },
+      "agg": "any"
+    },
+    {
+      "name": "hgb_min",
+      "source": "labs",
+      "filter": {
+        "test": [
+          "hemoglobin"
+        ]
+      },
+      "time_column": "report_time",
+      "window": {
+        "start": "admit",
+        "end": "tp"
+      },
+      "agg": "min"
+    },
+    {
+      "name": "n_prior_adm",
+      "source": "admissions",
+      "scope": "prior_admissions",
+      "agg": "count"
+    },
+    {
+      "name": "age",
+      "source": "patients",
+      "column": "age",
+      "agg": "value"
+    }
+  ],
+  "split_unit": "family",
+  "split": {
+    "key": "family_id",
+    "method": "group_holdout",
+    "test_fraction": 0.3,
+    "seed": 20261002
+  },
+  "preprocessing": [
+    {
+      "name": "median_impute",
+      "kind": "impute",
+      "fit_scope": "all"
+    },
+    {
+      "name": "one_hot",
+      "kind": "encode",
+      "fit_scope": "train"
+    },
+    {
+      "name": "standardize",
+      "kind": "scale",
+      "fit_scope": "train"
+    }
+  ],
+  "model": {
+    "family": "logistic_regression",
+    "tuning": {
+      "method": "group_kfold",
+      "cv_key": "family_id",
+      "fit_scope": "train"
+    }
+  },
+  "attempts": {
+    "n_designs_tried": 1,
+    "n_models_tried": 1,
+    "correction": "none"
+  }
+}

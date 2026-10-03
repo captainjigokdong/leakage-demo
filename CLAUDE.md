@@ -18,7 +18,7 @@ Cedars-Sinai(Moore 연구실) 3주 연수 계획을 **연수 전에 합성 데�
 
 ## 현재 단계
 
-**4단계: 보류 해제, 결함 주입, 맹검 변형** (3단계 완료 2026-10-03, `skill-frozen` 태그. 이후 `leakcheck/`, `skill_src/` 수정 금지. 완료 시 이 줄을 갱신하고 커밋)
+**5단계: 채점 규칙과 성공 기준 고정** (4단계 완료 2026-10-03: 맹검 변형 20개 `designs/variants/`, 정답표 `sealed/answer_key.enc`. `skill-frozen` 태그 이후 `leakcheck/`, `skill_src/` 수정 금지. 완료 시 이 줄을 갱신하고 커밋)
 
 ## 절대 규칙
 
