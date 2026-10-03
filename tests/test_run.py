@@ -22,7 +22,7 @@ class FakeUsers(run.OsUser):
 
 
 def stream(skills, result="보고서\n```findings\n[]\n```", tools_used=(), model=run.MODEL, is_error=False,
-           tools=("Bash", "Read", "Skill")):
+           tools=run.VISIBLE_TOOLS):
     ev = [{"type": "system", "subtype": "init", "model": model, "skills": list(skills), "tools": list(tools),
            "mcp_servers": []}]
     for name, inp in tools_used:
@@ -321,6 +321,8 @@ def test_root_mode_and_deny_settings():
             assert f"{t}(/{p}/**)" in rules
     argv = run.RootUser().wrap("x", run.agent_argv("t", run.MODEL, Path("/s.json")), {"A": "1"})
     assert argv[:3] == ["env", "-i", "A=1"] and "--settings" in argv and "setpriv" not in argv
+    i = argv.index("--tools")
+    assert argv[i + 1:i + 7] == list(run.VISIBLE_TOOLS) and "Agent" not in run.VISIBLE_TOOLS
 
 
 @pytest.mark.parametrize("cmd", [
@@ -381,3 +383,80 @@ def test_auth_error_stops_without_retry(tmp_path):
     with pytest.raises(run.LimitReached):
         run.run_row(tmp_path / "out", "abc123def456", row, run.MODEL, FakeUsers(), launcher_from([(1, bad)]),
                     tmp_path / "runs", fake_checker)
+
+
+
+# ---------------------------------------------------------------- 시험 실행 3차 폐기 6건 재검사 (2026-10-03)
+
+ARCHIVE = run.ROOT / "experiment" / "pilot" / "_run3_20261003" / "discarded"
+# 오탐 4건: 자기 임시 폴더(/tmp/claude-0/-srv-leakruns-<자기 실행>-ws/...), 코드 안의 '/' 문자열 (split('/'))
+FALSE_POS = [("278c665bce74", 2), ("8dab1848f9d0", 1), ("8dab1848f9d0", 2), ("8dab1848f9d0", 3)]
+# 실제 탐색 2건: 하위 에이전트에게 find / 지시, find /srv/leakruns (다른 실행 폴더 순회) → 계속 오염
+TRUE_POS = [("278c665bce74", 1), ("278c665bce74", 3)]
+COND = {"278c665bce74": "가", "8dab1848f9d0": "나"}
+
+
+def _reaudit(rid, k):
+    import gzip as _gz
+    ev = run.parse_stream(_gz.decompress((ARCHIVE / rid / f"try{k}" / "transcript.jsonl.gz").read_bytes()))
+    root = run.RUN_BASE / f"{rid}-t{k}"
+    rd = run.RunDir(root, root / "ws", root / "home", root / "cfg", root / "lchome" if COND[rid] == "가" else None)
+    return run.audit(ev, rd, COND[rid])["violations"]
+
+
+@pytest.mark.skipif(not ARCHIVE.exists(), reason="보관 기록 없음")
+@pytest.mark.parametrize("rid,k", FALSE_POS)
+def test_pilot3_false_positives_cleared(rid, k):
+    assert _reaudit(rid, k) == []
+
+
+@pytest.mark.skipif(not ARCHIVE.exists(), reason="보관 기록 없음")
+@pytest.mark.parametrize("rid,k", TRUE_POS)
+def test_pilot3_real_exploration_still_flagged(rid, k):
+    assert _reaudit(rid, k)
+
+
+def test_own_tmp_allowed_other_tmp_forbidden(tmp_path):
+    rd = run.prepare_run(tmp_path, "abc123def456-t2", run.variants()[0], "나")
+    use = lambda p: [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Read",
+                      "input": {"file_path": p}}]}}]
+    assert run.audit(use("/tmp/claude-0/-srv-leakruns-abc123def456-t2-ws/x/y.py"), rd, "나")["violations"] == []
+    for bad in ("/tmp/claude-0/-srv-leakruns-abc123def456-t1-ws/x", "/tmp/claude-0/-home-user-leakage-demo/x",
+                "/tmp/claude-0"):
+        assert run.audit(use(bad), rd, "나")["violations"], bad
+
+
+@pytest.mark.parametrize("cmd", ["ls /", "find / -name x", "python3 -c \"import os; os.listdir('/')\"",
+                                 "python3 -c \"import os; list(os.walk('/'))\"", "ls -la /srv",
+                                 "python3 -c \"from pathlib import Path; list(Path('/').rglob('*'))\""])
+def test_listing_commands_flagged(tmp_path, cmd):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}]
+    assert run.audit(ev, rd, "나")["violations"], cmd
+
+
+@pytest.mark.parametrize("cmd", ["python3 -c \"print('a/b'.split('/'))\"", "python3 -c \"x = '/'.join(['a', 'b'])\"",
+                                 "python3 -c \"import os; os.listdir('data')\""])
+def test_slash_string_not_flagged(tmp_path, cmd):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}]
+    assert run.audit(ev, rd, "나")["violations"] == [], cmd
+
+
+def test_checker_invoked_ignores_denied_calls(tmp_path):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "가")
+    ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "id": "t1",
+           "input": {"command": "python3 .claude/skills/leakage-check/scripts/run_check.py d.json --data data; echo $?"}}]}},
+          {"type": "result", "permission_denials": [{"tool_use_id": "t1", "tool_name": "Bash", "tool_input": {}}]}]
+    assert run.audit(ev, rd, "가")["checker_invoked"] is False
+
+
+def test_visible_tools_manipulation_check():
+    ok = {"model": run.MODEL, "skills": [], "tools": list(run.VISIBLE_TOOLS), "mcp_servers": []}
+    assert run.manipulation_check(ok, "나", run.MODEL) == []
+    assert run.manipulation_check({**ok, "tools": [*run.VISIBLE_TOOLS, "Agent"]}, "나", run.MODEL)
+
+
+def test_tmpdir_inside_run_root(tmp_path):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    assert run.agent_env(rd, "나", {})["TMPDIR"] == str(rd.root / "tmp") and (rd.root / "tmp").is_dir()

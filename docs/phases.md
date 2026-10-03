@@ -191,6 +191,16 @@
 - 실행 폴더는 저장소 밖(`/srv/leakruns`). 권한 규칙으로 Read·Glob·Grep이 `/home/user`, `/root`, `/mnt/user-data`, `/tmp/claude-0`를 보지 못하게 막는다 (`run.deny_settings`, `--settings`로 두 조건에 같게).
 - 오염 검사를 넓혔다: 모든 도구 호출 입력(경로 인자, Bash로 실행한 python 명령, Write·Edit로 쓴 스크립트 내용)과 실행 뒤 작업 폴더에 남은 `.py`·`.sh` 파일에서 금지 경로, 상위 폴더 탐색(`..`), 최상위 폴더 조회(`/`, `/home`, `/srv`, `/tmp` 등의 목록 조회·순회), 다른 사용자 홈 확장을 찾는다. 하나라도 있으면 오염으로 보고 다시 실행한다. 오염으로 버린 시도 수를 조건별로 기록한다 (`status`의 `contamination_discarded`).
 
+**시험 실행 3차와 수정 (2026-10-03, 자료를 보기 전. 채점기·지시문·점검 코드는 건드리지 않음)**
+- 3차(root 실행): 인증 통과. 4행 중 2행 성공, 2행은 3시도 모두 오염으로 폐기. 결과는 `experiment/pilot/_run3_20261003/`에 보관하고 채점 대상에서 뺀다 (보고서 본문은 보지 않음).
+- 폐기 6건 재검토(도구 호출 기록만): 4건은 오탐(자기 임시 폴더 `/tmp/claude-0/-srv-leakruns-<자기 실행>-ws/...`, 코드 안의 `'/'` 문자열). 2건은 실제 탐색 — 둘 다 (가)에서 점검기 실행이 권한 거부된 뒤 `leakcheck` 패키지를 찾으려 `find /`(하위 에이전트에 지시), `find /srv/leakruns`를 시도. 이 2건은 고친 검사에서도 오염으로 남는다 (`tests/test_run.py`의 3차 재검사 시험).
+- 원인과 수정
+  - 오염 검사: 자기 임시 폴더 허용(다른 실행·세션은 금지). 최상위 폴더는 실제 조회·순회 명령(`ls /`, `find /`, `os.walk('/')`, `os.listdir('/')`, `Path('/').rglob` 등)의 대상일 때만 잡는다. 에이전트 임시 폴더를 실행 폴더 안으로 둔다 (`TMPDIR`).
+  - 보이는 도구를 `Read, Glob, Grep, Skill, Write, Bash` 6개로 제한 (`--tools`). 3차에서는 Agent(하위 에이전트), SendMessage 등이 보였고 Agent가 실제로 쓰였다. 조작 확인에 "보이는 도구 = 이 6개"를 넣었다.
+  - (가)의 점검기 호출 거부: `...; echo $?`처럼 이어 붙인 명령, `LEAKCHECK_HOME=... python3 ...`처럼 변수를 앞에 붙인 명령은 `Bash(python3:*)` 규칙에 맞지 않아 거부된다. `LEAKCHECK_HOME`은 (가) 에이전트 환경에 이미 들어 있다 ((나)에는 없음). 문서 명령 그대로(`python3 .claude/skills/leakage-check/scripts/run_check.py <설계서> --data data`)는 거부되지 않음을 깨끗한 기본 설계서로 확인했다 (권한 거부 0, 종료 코드 0).
+  - `checker_invoked`는 권한이 거부되지 않은 호출만 센다 (3차에서는 거부된 호출도 세었다).
+  - 에이전트 환경의 python이 pandas를 못 불러왔다 (`dateutil`이 `/root/.local`에만 있어 HOME을 바꾸면 안 보임). `PYTHONNOUSERSITE=1 pip install -r requirements.txt`로 시스템 전역에 설치하고, preflight가 에이전트 환경에서 패키지를 불러올 수 있는지 확인한다. **새 컨테이너에서는 이 설치를 먼저 한다.**
+
 **7단계 한계에 적을 것**
 - 격리가 운영체제 수준이 아니라 **권한 규칙과 사후 검사에 의존한다** (root 실행). 에이전트가 python 코드로 경로를 문자열 조합 등 검사가 알아보지 못하는 방식으로 만들면 막지 못한다. 오염으로 버린 시도 수를 조건별로 함께 보고한다.
 - 두 조건 모두에 Claude Code 기본 스킬 18개(deep-research, code-review 등)가 함께 로드된다 (시험 실행 1차 시작 기록에서 확인. 세션 환경을 상속한 2차에서는 artifact-diagramming이 더해져 19개, 두 조건 같음). 두 조건이 같아 비교는 공정하지만, (나)는 "스킬이 전혀 없는" 조건이 아니라 "누수 점검 스킬만 없는" 조건이다. 조작 확인은 `leakage-check` 유무만 본다.
