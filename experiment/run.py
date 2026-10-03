@@ -53,7 +53,7 @@ REPS = 3                   # 반복 = 묶음. 묶음 하나 = 변형 20 × 조�
 CONDITIONS = ("가", "나")
 MODEL = "claude-opus-5-5"
 TIMEOUT_S = 20 * 60
-MAX_RETRIES = 2            # 기계적 실패 시 다시 실행하는 최대 횟수 (시도는 최대 3회)
+MAX_RETRIES = 5            # 기계적 실패 시 다시 실행하는 최대 횟수 (시도는 최대 6회). 그래도 실패하면 빈칸 (2026-10-03 사용자 결정)
 WORKERS = 3
 
 RUN_BASE = Path("/srv/leakruns")       # 실행 폴더 (실행마다 다른 OS 사용자, 0700)
@@ -64,7 +64,14 @@ CA_SRC = Path("/root/.ccr/ca-bundle.crt")
 DISALLOWED_TOOLS = ("WebSearch", "WebFetch")
 # 권한 방식 (2026-10-03 사용자 결정): bypassPermissions는 쓰지 않는다. dontAsk 모드에서 미리 허용한 도구만 쓰고
 # 그 밖의 호출은 거부된다. 두 조건에 같은 값. python과 python3를 둘 다 허용한다 (SKILL.md가 python으로 부른다).
-ALLOWED_TOOLS = ("Read", "Glob", "Grep", "Skill", "Write", "Bash(python:*)", "Bash(python3:*)")
+# 2026-10-03 사용자 결정: 이어 붙인 명령(cd …; python …), 파이프(python … | sed), 앞에 붙인 변수(VAR=… python …)로도
+# 점검기 호출이 거부되지 않게 읽기 전용 기본 명령을 허용한다. 금지 경로 접근은 오염 검사가 잡는다.
+READONLY_CMDS = ("cd", "ls", "cat", "head", "tail", "wc", "echo", "sed", "grep", "zcat", "mkdir", "pwd")
+ALLOWED_TOOLS = ("Read", "Glob", "Grep", "Skill", "Write", "Bash(python:*)", "Bash(python3:*)",
+                 *(f"Bash({c}:*)" for c in READONLY_CMDS),
+                 # 점검기 앞에 변수를 붙이거나 export하는 형태 (시험으로 확인: 이 두 규칙이 있어야 거부되지 않는다)
+                 "Bash(LEAKCHECK_HOME=*)", "Bash(export:*)")
+# 규칙으로 풀리지 않는 형태 (2026-10-03 시험): `echo $?`처럼 특수 변수를 펼치는 명령은 허용 규칙이 있어도 거부된다.
 # 에이전트에게 보이는 도구 (--tools). 이 밖의 도구(Agent·Task, SendMessage 등)는 아예 보이지 않는다. 두 조건 같음.
 VISIBLE_TOOLS = ("Read", "Glob", "Grep", "Skill", "Write", "Bash")
 PERMISSION_ARGS: tuple[str, ...] = ("--permission-mode", "dontAsk", "--allowedTools", *ALLOWED_TOOLS)
@@ -212,9 +219,13 @@ RUN_AS = "root"
 DENY_PATHS = ("/home/user", "/root", "/mnt/user-data", "/tmp/claude-0")
 
 
-def deny_settings() -> dict:
+def deny_settings(rd: "RunDir | None" = None) -> dict:
+    """금지 경로 차단 + (실행 폴더를 주면) 자기 실행 폴더 안에서만 셸 출력 돌리기(> 파일) 허용."""
     rules = [f"{tool}(/{p}/**)" for p in DENY_PATHS for tool in ("Read", "Glob", "Grep")]
-    return {"permissions": {"deny": rules}}
+    perms = {"deny": rules}
+    if rd is not None:
+        perms["allow"] = [f"Edit(/{rd.root}/**)"]
+    return {"permissions": perms}
 
 
 def agent_argv(text: str, model: str, settings: Path | None = None) -> list[str]:
@@ -496,7 +507,7 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
     users.create(name, rd)
     try:
         settings = rd.root / "settings.json"
-        settings.write_text(json.dumps(deny_settings()), encoding="utf-8")
+        settings.write_text(json.dumps(deny_settings(rd)), encoding="utf-8")
         argv = users.wrap(name, agent_argv(text, model, settings), agent_env(rd, row["condition"]))
         code, out, err, secs = launcher(argv, rd.ws, TIMEOUT_S)
     finally:
@@ -709,6 +720,7 @@ def status(out: Path) -> dict:
         secs = c.pop("seconds")
         c["mean_seconds_per_attempt"] = round(sum(secs) / len(secs), 1) if secs else None
         c["cost_usd"] = round(c["cost_usd"], 3)
+        c["blank"] = c["failed"]          # 재시도를 다 써도 실패한 행 = 빈칸 (보고서 없음)
         n = c["done"] + c["failed"]
         c["mean_tokens_per_run"] = {k: round(v / n) for k, v in c["tokens"].items()} if n else None
     return s
@@ -765,6 +777,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--model", default=MODEL)
     ap.add_argument("--out", type=Path)
     ap.add_argument("--no-commit", action="store_true")
+    ap.add_argument("--batches", type=int, nargs="+", help="이 묶음만 돌린다 (예: --batches 1)")
     a = ap.parse_args(argv)
     if a.cmd == "status":
         print(json.dumps(status(a.out or RUNS_OUT), ensure_ascii=False, indent=1))
@@ -785,6 +798,8 @@ def main(argv: list[str] | None = None) -> int:
     if probs:
         raise SystemExit("격리 확인 실패:\n" + "\n".join(probs))
     prompt.text()
+    if a.batches:
+        sched = {rid: r for rid, r in sched.items() if r.get("batch", r["rep"]) in a.batches}
     finished = run_batches(out, sched, a.model, a.workers, commit=not a.no_commit, limit=a.limit)
     st = status(out)
     print(json.dumps(st, ensure_ascii=False, indent=1))

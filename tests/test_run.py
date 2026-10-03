@@ -260,7 +260,12 @@ def test_permission_args_same_for_both_and_no_bypass():
     argv = run.agent_argv("x", run.MODEL)
     assert "bypassPermissions" not in " ".join(argv)
     assert argv[argv.index("--permission-mode") + 1] == "dontAsk"
-    assert set(run.ALLOWED_TOOLS) == {"Read", "Glob", "Grep", "Skill", "Write", "Bash(python:*)", "Bash(python3:*)"}
+    assert {"Read", "Glob", "Grep", "Skill", "Write", "Bash(python:*)", "Bash(python3:*)",
+            "Bash(LEAKCHECK_HOME=*)", "Bash(export:*)"} <= set(run.ALLOWED_TOOLS)
+    for c in ("cd", "ls", "cat", "head", "tail", "wc", "echo", "sed", "grep", "zcat", "mkdir", "pwd"):
+        assert f"Bash({c}:*)" in run.ALLOWED_TOOLS
+    assert not any(x in " ".join(run.ALLOWED_TOOLS) for x in ("rm", "cp", "mv", "curl", "Edit(", "Agent"))
+    assert run.MAX_RETRIES == 5
 
 
 def test_permission_denials_recorded(tmp_path):
@@ -493,3 +498,21 @@ def test_dotdot_and_listing_rules(tmp_path, cmd, bad):
     rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
     ev = [{"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}]
     assert bool(run.audit(ev, rd, "나")["violations"]) is bad, cmd
+
+
+
+def test_settings_allow_own_run_only(tmp_path):
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    perms = run.deny_settings(rd)["permissions"]
+    assert perms["allow"] == [f"Edit(/{rd.root}/**)"]
+    assert "Read(//home/user/**)" in perms["deny"]
+
+
+def test_blank_rows_counted(tmp_path):
+    row = {"condition": "가", "rep": 1, "batch": 1, "variant": run.variants()[0], "order": 0}
+    out = tmp_path / "out"
+    run.ensure_schedule(out, {"abc123def456": row})
+    run.run_row(out, "abc123def456", row, run.MODEL, FakeUsers(), launcher_from([(1, b"")] * 6),
+                tmp_path / "runs", fake_checker)
+    st = run.status(out)
+    assert st["가"]["blank"] == 1 and st["가"]["retries"] == 5
