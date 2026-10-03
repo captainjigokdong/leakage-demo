@@ -185,6 +185,10 @@ def agent_env(rd: RunDir, condition: str) -> dict[str, str]:
            "CLAUDE_CONFIG_DIR": str(rd.cfg), "NODE_EXTRA_CA_CERTS": ca, "SSL_CERT_FILE": ca,
            "REQUESTS_CA_BUNDLE": ca, "CURL_CA_BUNDLE": ca, "PIP_CERT": ca}
     env.update({k: os.environ[k] for k in ENV_PASS if k in os.environ})
+    # 인증: 환경 설정의 ANTHROPIC_API_KEY만 넘긴다 (이 세션의 인증 정보는 넘기지 않는다). 키가 있으면 기본 API 주소를 쓴다.
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        env["ANTHROPIC_API_KEY"] = os.environ["ANTHROPIC_API_KEY"]
+        env.pop("ANTHROPIC_BASE_URL", None)
     if condition == "가":
         env["LEAKCHECK_HOME"] = str(rd.lchome)
     return env
@@ -556,8 +560,8 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "schedule":
         print(f"{out / 'conditions.json'}: {len(sched)}행")
         return 0
-    if not PERMISSION_ARGS:
-        raise SystemExit("PERMISSION_ARGS가 정해지지 않았다 (사용자 결정 필요).")
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        raise SystemExit("ANTHROPIC_API_KEY가 없다. 실행 사용자는 이 세션의 인증을 쓰지 않으므로 환경 설정에 키를 넣고 새 세션에서 실행한다.")
     probs = preflight()
     if probs:
         raise SystemExit("격리 확인 실패:\n" + "\n".join(probs))

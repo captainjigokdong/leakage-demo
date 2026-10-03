@@ -260,3 +260,11 @@ def test_permission_denials_recorded(tmp_path):
     d = meta["attempts"][-1]["permission_denials"]
     assert d["count"] == 2 and d["checker_denied"] == 1 and d["by_tool"] == {"Bash": 1, "Edit": 1}
     assert meta["status"] == "done"
+
+
+def test_api_key_passed_and_base_url_dropped(monkeypatch, tmp_path):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "http://127.0.0.1:1")
+    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
+    env = run.agent_env(rd, "나")
+    assert env["ANTHROPIC_API_KEY"] == "test-key" and "ANTHROPIC_BASE_URL" not in env

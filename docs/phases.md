@@ -175,7 +175,9 @@
 **진행 기록 (2026-10-03)**
 - 0단계 확인: 이 작업 공간에서 `claude -p` 헤드리스 호출은 응답한다.
 - `experiment/run.py`와 시험(`tests/test_run.py`, 가짜 실행기) 작성. 격리 확인(preflight) 통과. 실행표 고정: 본 실행 `experiment/runs/conditions.json` 120행(시드 20261004), 시험 실행 `experiment/pilot/conditions.json` 4행(시드 20261005).
-- **막힘**: 하위 에이전트를 권한 확인 없이(`bypassPermissions`) 띄우는 명령이 세션의 자동 권한 분류기에 거부되었다. 권한 방식(`run.PERMISSION_ARGS`)은 사용자 결정 대기. 에이전트 실행은 아직 0회.
+- 하위 에이전트를 권한 확인 없이(`bypassPermissions`) 띄우는 명령은 세션의 자동 권한 분류기에 거부되었다. 사용자 결정으로 **권한 범위 축소** 방식을 쓴다: `--permission-mode dontAsk` + 허용 도구 `Read, Glob, Grep, Skill, Write, Bash(python:*), Bash(python3:*)` (두 조건 같음). 권한 거부 횟수와 점검기 호출 거부 횟수를 실행마다 기록한다.
+- 시험 실행 1차 (2026-10-03): 4행 × 3시도 = 12시도 모두 1초 안에 `Not logged in`으로 실패 (모델 호출 0, 토큰 0). 허용 목록 환경에는 인증이 없다. 기록은 `experiment/pilot/_failed_auth_20261003/`에 따로 보관 (채점 대상 아님). 인증 정보를 찾는 명령은 자동 권한 분류기에 거부되어 멈췄다.
+- 다음: 사용자가 환경 설정에 `ANTHROPIC_API_KEY`를 넣고 새 세션에서 `python -m experiment.run pilot`. 실행기는 이 키만 실행 사용자에게 넘기고 기본 API 주소를 쓴다.
 
 **완료 기준**: 120개 보고서 저장, 실패한 실행 0개 또는 재실행 완료
 
