@@ -1,0 +1,62 @@
+{
+ "report_id": "b5dc9c59a39d",
+ "variant": "design_D97B.json",
+ "exit_code": 1,
+ "checker": {
+  "design_id": "design_D97B",
+  "design_type": "dynamic",
+  "rules_version": "1",
+  "data_checked": true,
+  "blocked": true,
+  "summary": {
+   "차단": 1,
+   "경고": 1,
+   "통과": 4,
+   "기록": 1
+  },
+  "findings": [
+   {
+    "question": "Q1",
+    "verdict": "차단",
+    "target": "features.n_proc",
+    "reason": "특징의 확인 가능 시각이 기준 시점(tp) 뒤일 수 있다 (tₚ = admit+1d). procedures.code: 창 끝 tp의 날짜 끝(23:59) → 확인 가능 시각 상한 tₚ+24h. 규칙(3층): 날짜만 있어 그날 중 언제인지 모른다. 보수적으로 그날 23:59로 가정 데이터: 752/23,223 예측 행에서 확인 가능 시각 > tp."
+   },
+   {
+    "question": "Q4",
+    "verdict": "경고",
+    "target": "features.n_proc",
+    "reason": "결과(aki_48h)의 대리 변수 목록과 일치: procedures code∈['5A1D70Z'] (투석 처치). 결과를 정하는 과정이 남긴 기록일 수 있어 사람이 확인."
+   },
+   {
+    "question": "Q6",
+    "verdict": "기록",
+    "target": "attempts",
+    "reason": "설계 1개, 모델 1개 시도, 보정: none."
+   },
+   {
+    "question": "Q2",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "분할 키 family_id ≥ 독립 단위 family"
+   },
+   {
+    "question": "Q3",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "전처리 2단계의 적합 범위 = 학습 부분"
+   },
+   {
+    "question": "Q5",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "포함·제외 기준 2개의 확인 가능 시각 ≤ tp"
+   },
+   {
+    "question": "Q7",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "결과 확인 강도가 층마다 같음 (또는 층별로 다룸, 또는 측정 의존 결과 아님)"
+   }
+  ]
+ }
+}

@@ -1,0 +1,560 @@
+{
+ "report_id": "278c665bce74",
+ "status": "failed",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 144.8,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "leakage-check",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/278c665bce74-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 18,
+    "duration_ms": 143040,
+    "total_cost_usd": 0.6235422,
+    "usage": {
+     "input_tokens": 28,
+     "cache_creation_input_tokens": 39717,
+     "cache_read_input_tokens": 338271,
+     "output_tokens": 11902,
+     "output_tokens_details": {
+      "thinking_tokens": 3379
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 39717,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1514,
+       "cache_read_input_tokens": 41891,
+       "cache_creation_input_tokens": 3787,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 3787
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 28,
+      "outputTokens": 11902,
+      "cacheReadInputTokens": 338271,
+      "cacheCreationInputTokens": 39717,
+      "webSearchRequests": 0,
+      "costUSD": 0.6235422,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 3379,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_016gJefkLzBoGGiyYEuewQQs",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t1/ws; cat .claude/skills/leakage-check/scripts/run_check.py | head -60; cat data/MANIFEST.json data/OUTPATIENT_MANIFEST.json; python .claude/skills/leakage-check/scripts/run_check.py design_4BE0.json --data data --json ../tmp/claude-0/-srv-leakruns-278c665bce74-t1-ws/83eb2e96-6db8-48d5-b833-a2e7b4f0af34/scratchpad/result.json; echo EXIT $?",
+       "description": "Inspect check script, manifests, and run check"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01UrowaowYBLcB4bgvg5RNea",
+      "tool_input": {
+       "command": "python -c \"\nimport pandas as pd, numpy as np\na=pd.read_csv('data/admissions.csv.gz',parse_dates=['admit_time','discharge_time']); l=pd.read_csv('data/labs.csv.gz',parse_dates=['collect_time'])\ncr=l[l.test=='creatinine'].merge(a[['admission_id','admit_time','unit']],on='admission_id')\ncr['d']=((cr.collect_time-cr.admit_time).dt.total_seconds()//86400).clip(upper=7)\nlos=(a.discharge_time-a.admit_time).dt.total_seconds()/86400\n# per admission-day rate among admissions still present\nout={}\nfor d in range(7):\n    alive=a[los>d+1]; c=cr[(cr.d==d)&cr.admission_id.isin(alive.admission_id)]\n    out[d]=(c.groupby('unit').size()/alive.unit.value_counts())\nprint(pd.DataFrame(out))\no=pd.read_csv('data/outpatient_visits.csv.gz'); print(o.visit_time.min(), o.visit_time.max())\n\" ; python -c \"\nimport sys; sys.path.insert(0,'/srv/leakruns/278c665bce74-t1/lchome')\nimport leakcheck.rules as r, inspect; src=inspect.getsource(r); print(src[:6000])\"",
+       "description": "Check unit timing signal and rules table"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 8,
+     "Grep": 2,
+     "Read": 4,
+     "Skill": 1,
+     "Write": 1
+    },
+    "checker_invoked": true,
+    "skill_tool_invoked": true,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Bash",
+      "path": "..",
+      "why": "상위 폴더 탐색 (..)"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [
+    "designs/schema.json",
+    "leakcheck/__init__.py",
+    "leakcheck/checks.py",
+    "leakcheck/design.py",
+    "leakcheck/features.py",
+    "leakcheck/lock.py",
+    "leakcheck/outcomes.py",
+    "leakcheck/rules.py",
+    "leakcheck/splitting.py",
+    "leakcheck/tagging.py",
+    "leakcheck/timeline.py",
+    "synth/__init__.py",
+    "synth/generate.py",
+    "synth/stats.py"
+   ],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 2,
+    "by_tool": {
+     "Bash": 2
+    },
+    "checker_denied": 1,
+    "commands": [
+     "cd /srv/leakruns/278c665bce74-t1/ws; cat .claude/skills/leakage-check/scripts/run_check.py | head -60; cat data/MANIFEST.json data/OUTPATIENT_MANIFEST.json; python .claude/skills/leakage-check/scripts",
+     "python -c \"\nimport pandas as pd, numpy as np\na=pd.read_csv('data/admissions.csv.gz',parse_dates=['admit_time','discharge_time']); l=pd.read_csv('data/labs.csv.gz',parse_dates=['collect_time'])\ncr=l[l."
+    ]
+   }
+  },
+  {
+   "try": 2,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 45.1,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "leakage-check",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/278c665bce74-t2/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 9,
+    "duration_ms": 43725,
+    "total_cost_usd": 0.2187632,
+    "usage": {
+     "input_tokens": 10,
+     "cache_creation_input_tokens": 15626,
+     "cache_read_input_tokens": 69576,
+     "output_tokens": 3990,
+     "output_tokens_details": {
+      "thinking_tokens": 1695
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 15626,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 3149,
+       "cache_read_input_tokens": 18796,
+       "cache_creation_input_tokens": 2791,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2791
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 10,
+      "outputTokens": 3990,
+      "cacheReadInputTokens": 69576,
+      "cacheCreationInputTokens": 15626,
+      "webSearchRequests": 0,
+      "costUSD": 0.2187632,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 1695,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_018xfVXmc7CYmKqKd2wpSPRF",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t2/ws; ls -R | head -50; cat design_4BE0.json; ls .claude/skills/leakage-check -R | head -40",
+       "description": "List files and show design"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 1,
+     "Glob": 1,
+     "Read": 4,
+     "Skill": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": true,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Bash",
+      "path": "ls -R",
+      "why": "최상위 폴더 조회·순회"
+     },
+     {
+      "tool": "Bash",
+      "path": "ls .claude/skills/leakage-check -R",
+      "why": "최상위 폴더 조회·순회"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [
+    "designs/schema.json",
+    "leakcheck/__init__.py",
+    "leakcheck/checks.py",
+    "leakcheck/design.py",
+    "leakcheck/features.py",
+    "leakcheck/lock.py",
+    "leakcheck/outcomes.py",
+    "leakcheck/rules.py",
+    "leakcheck/splitting.py",
+    "leakcheck/tagging.py",
+    "leakcheck/timeline.py",
+    "synth/__init__.py",
+    "synth/generate.py",
+    "synth/stats.py"
+   ],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 1,
+    "by_tool": {
+     "Bash": 1
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/278c665bce74-t2/ws; ls -R | head -50; cat design_4BE0.json; ls .claude/skills/leakage-check -R | head -40"
+    ]
+   }
+  },
+  {
+   "try": 3,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 139.3,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "leakage-check",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/278c665bce74-t3/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 21,
+    "duration_ms": 137962,
+    "total_cost_usd": 0.5954258,
+    "usage": {
+     "input_tokens": 34,
+     "cache_creation_input_tokens": 35669,
+     "cache_read_input_tokens": 441789,
+     "output_tokens": 11079,
+     "output_tokens_details": {
+      "thinking_tokens": 3178
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 35669,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1649,
+       "cache_read_input_tokens": 37942,
+       "cache_creation_input_tokens": 3688,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 3688
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 34,
+      "outputTokens": 11079,
+      "cacheReadInputTokens": 441789,
+      "cacheCreationInputTokens": 35669,
+      "webSearchRequests": 0,
+      "costUSD": 0.5954258,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 3178,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01KxfhjyY3HeRJoWow7iy36q",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t3/ws; cat .claude/skills/leakage-check/scripts/run_check.py | head -60; cat data/MANIFEST.json data/OUTPATIENT_MANIFEST.json; python .claude/skills/leakage-check/scripts/run_check.py design_4BE0.json --data data --json ../tmp/claude-0/-srv-leakruns-278c665bce74-t3-ws/a8aad76e-6aeb-4cb9-ae69-174ce26b4342/scratchpad/result.json; echo EXIT $?"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_015CwD85HMNt3qEbEWipNJLE",
+      "tool_input": {
+       "command": "python .claude/skills/leakage-check/scripts/run_check.py design_4BE0.json --data data --card 2>&1 | sed -n '/결정 카드/,$p'"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 9,
+     "Grep": 3,
+     "Read": 5,
+     "Skill": 1,
+     "Write": 1
+    },
+    "checker_invoked": true,
+    "skill_tool_invoked": true,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Bash",
+      "path": "..",
+      "why": "상위 폴더 탐색 (..)"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [
+    "designs/schema.json",
+    "leakcheck/__init__.py",
+    "leakcheck/checks.py",
+    "leakcheck/design.py",
+    "leakcheck/features.py",
+    "leakcheck/lock.py",
+    "leakcheck/outcomes.py",
+    "leakcheck/rules.py",
+    "leakcheck/splitting.py",
+    "leakcheck/tagging.py",
+    "leakcheck/timeline.py",
+    "synth/__init__.py",
+    "synth/generate.py",
+    "synth/stats.py"
+   ],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 2,
+    "by_tool": {
+     "Bash": 2
+    },
+    "checker_denied": 2,
+    "commands": [
+     "cd /srv/leakruns/278c665bce74-t3/ws; cat .claude/skills/leakage-check/scripts/run_check.py | head -60; cat data/MANIFEST.json data/OUTPATIENT_MANIFEST.json; python .claude/skills/leakage-check/scripts",
+     "python .claude/skills/leakage-check/scripts/run_check.py design_4BE0.json --data data --card 2>&1 | sed -n '/결정 카드/,$p'"
+    ]
+   }
+  }
+ ],
+ "retries": 2,
+ "retry_reasons": [
+  "오염: 허용되지 않은 접근",
+  "오염: 허용되지 않은 접근",
+  "오염: 허용되지 않은 접근"
+ ]
+}

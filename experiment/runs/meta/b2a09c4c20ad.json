@@ -1,0 +1,158 @@
+{
+ "report_id": "b2a09c4c20ad",
+ "status": "done",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "ok",
+   "reasons": [],
+   "exit_code": 0,
+   "seconds": 140.7,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/b2a09c4c20ad-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 10,
+    "duration_ms": 139155,
+    "total_cost_usd": 0.5489717999999999,
+    "usage": {
+     "input_tokens": 20,
+     "cache_creation_input_tokens": 26953,
+     "cache_read_input_tokens": 204839,
+     "output_tokens": 14615,
+     "output_tokens_details": {
+      "thinking_tokens": 3033
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 26953,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1795,
+       "cache_read_input_tokens": 29930,
+       "cache_creation_input_tokens": 2984,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2984
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 20,
+      "outputTokens": 14615,
+      "cacheReadInputTokens": 204839,
+      "cacheCreationInputTokens": 26953,
+      "webSearchRequests": 0,
+      "costUSD": 0.5489717999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 3033,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01Yb8deS2JyhVa7CUS8u3yyq",
+      "tool_input": {
+       "command": "mkdir -p /srv/leakruns/b2a09c4c20ad-t1/ws/prep_D568 && cat > /srv/leakruns/b2a09c4c20ad-t1/ws/prep_D568/prep.py <<'EOF'\n\"\"\"design_D568 모델링 준비: 코호트·결과·특징 테이블과 학습/평가 분할 생성 (학습·성능 계산 없음).\n\n설계서와 다른 처리(보고서의 findings 참조, 확인 전 잠정):\n  - cr_last: collect_time 대신 report_time <= 퇴원 기준 (퇴원 시점에 보이지 않는 결과 제외)\n  - dx_*, n_dx: 인덱스 입원의 진단만 사용 (미래 입원의 진단 혼입 방지), ICD는 접두 일치\n  - 분할 키: family_id (없으면 patient_id로 대체) — split_unit/cv_key와 일치\n\"\"\"\nimport json\nfrom pathlib import Path\n\nimport numpy as np\nimport pandas as pd\nfrom sklearn.model_selection import GroupShuffleSplit\n\nWS = Path(__file__).resolve().parents[1]\nDATA, OUT = WS / \"data\", Path(__file__).resolve().parent\ndesign = json.loads((WS / \"design_D568.json\").read_text())\n\npat = pd.read_csv(DATA / \"patients.csv.gz\")\nadm = pd.read_csv(DATA / \"admissions.csv.gz\", parse_dates=[\"admit_time\", \"discharge_time\"])\nlabs = pd.read_csv(DATA / \"labs.csv.gz\", parse_dates=[\"collect_time\", \"report_time\"])\norders = pd.read_csv(DATA / \"orders.csv.gz\", parse_dates=[\"order_time\"])\ndx = pd.read_csv(DATA / \"diagnoses.csv.gz\")\n\n# 결과: 퇴원(tp) 후 30일 안에 다음 입원 시작\nadm = adm.sort_values([\"patient_id\", \"admit_time\"]).reset_index(drop=True)\nadm[\"tp\"] = adm[\"discharge_time\"]\nadm[\"next_admit\"] = adm.groupby(\"patient_id\")[\"admit_time\"].shift(-1)\ngap = adm[\"next_admit\"] - adm[\"tp\"]\nadm[\"readmit_30d\"] = (gap >= pd.Timedelta(0)) & (gap <= pd.Timedelta(days=30))\ndata_end = adm[\"admit_time\"].max()\nadm[\"followup_complete\"] = adm[\"tp\"] + pd.Timedelta(days=30) <= data_end\nadm[\"n_prior_adm\"] = adm.groupby(\"patient_id\").cumcount()\nadm[\"los_h\"] = (adm[\"discharge_time\"] - adm[\"admit_time\"]).dt.total_seconds() / 3600\n\n# 코호트\nco = adm.merge(pat, on=\"patient_id\", how=\"left\")\nco = co[(co[\"age\"] >= 18) & (co[\"discharge_status\"] != \"died\")].copy()\n\ndef lab_feature(test, time_col, agg):\n    s = labs[labs[\"test\"] == test].merge(co[[\"admission_id\", \"admit_time\", \"tp\"]], on=\"admission_id\")\n    s = s[(s[time_col] >= s[\"admit_time\"]) & (s[time_col] <= s[\"tp\"])]\n    if agg == \"min\":\n        return s.groupby(\"admission_id\")[\"value\"].min()\n    return s.sort_values(time_col).groupby(\"admission_id\")[\"value\"].last()\n\nco = co.set_index(\"admission_id\")\nco[\"hgb_min\"] = lab_feature(\"hemoglobin\", \"report_time\", \"min\")\nco[\"cr_last\"] = lab_feature(\"creatinine\", \"report_time\", \"last\")\n\no = orders[orders[\"order_type\"] == \"dialysis_order\"].merge(\n    co[[\"admit_time\", \"tp\"]], left_on=\"admission_id\", right_index=True)\no = o[(o[\"order_time\"] >= o[\"admit_time\"]) & (o[\"order_time\"] <= o[\"tp\"])]\nco[\"dialysis_ordered\"] = co.index.isin(o[\"admission_id\"])\n\ndx3 = dx.assign(p=dx[\"icd_code\"].str[:3])\nco[\"dx_ckd\"] = co.index.isin(dx3.loc[dx3[\"p\"] == \"N18\", \"admission_id\"])\nco[\"dx_chf\"] = co.index.isin(dx3.loc[dx3[\"p\"] == \"I50\", \"admission_id\"])\nco[\"n_dx\"] = dx.groupby(\"admission_id\").size().reindex(co.index).fillna(0).astype(int)\n\nfeat_names = [f[\"name\"] for f in design[\"features\"]]\nco = co.reset_index()\nco[\"split_group\"] = co[\"family_id\"].fillna(co[\"patient_id\"])\n\nsp = design[\"split\"]\ngss = GroupShuffleSplit(n_splits=1, test_size=sp[\"test_fraction\"], random_state=sp[\"seed\"])\ntr, te = next(gss.split(co, groups=co[\"split_group\"]))\nco[\"split\"] = \"train\"\nco.loc[te, \"split\"] = \"test\"\n\ncols = [\"admission_id\", \"patient_id\", \"family_id\", \"split_group\", \"tp\", \"split\",\n        \"followup_complete\", \"readmit_30d\"] + feat_names\nco[cols].to_csv(OUT / \"model_table.csv.gz\", index=False)\n\nsummary = {\n    \"n_admissions_total\": int(len(adm)),\n    \"n_cohort\": int(len(co)),\n    \"n_patients\": int(co[\"patient_id\"].nunique()),\n    \"n_followup_incomplete\": int((~co[\"followup_complete\"]).sum()),\n    \"split_counts\": co[\"split\"].value_counts().to_dict(),\n    \"outcome_rate_by_split\": co.groupby(\"split\")[\"readmit_30d\"].mean().round(4).to_dict(),\n    \"outcome_by_discharge_status\": co.groupby(\"discharge_status\")[\"readmit_30d\"].agg([\"mean\", \"size\"]).round(4).to_dict(\"index\"),\n    \"group_overlap_train_test\": {\n        k: len(set(co.loc[co.split == \"train\", k].dropna()) & set(co.loc[co.split == \"test\", k].dropna()))\n        for k in [\"patient_id\", \"family_id\"]},\n    \"missing_rate\": co[feat_names].isna().mean().round(4).to_dict(),\n}\n(OUT / \"prep_summary.json\").write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=str))\nprint(json.dumps(summary, ensure_ascii=False, indent=2, default=str))\nEOF\ncd /srv/leakruns/b2a09c4c20ad-t1/ws/prep_D568 && python3 prep.py",
+       "description": "Write and run preparation script"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 7,
+     "Write": 2
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": []
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 1,
+    "by_tool": {
+     "Bash": 1
+    },
+    "checker_denied": 0,
+    "commands": [
+     "mkdir -p /srv/leakruns/b2a09c4c20ad-t1/ws/prep_D568 && cat > /srv/leakruns/b2a09c4c20ad-t1/ws/prep_D568/prep.py <<'EOF'\n\"\"\"design_D568 모델링 준비: 코호트·결과·특징 테이블과 학습/평가 분할 생성 (학습·성능 계산 없음).\n\n설계서와 다른 처리(보고서"
+    ]
+   },
+   "no_checker_after_denial": false
+  }
+ ],
+ "retries": 0,
+ "retry_reasons": []
+}

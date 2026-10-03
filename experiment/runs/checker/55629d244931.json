@@ -1,0 +1,62 @@
+{
+ "report_id": "55629d244931",
+ "variant": "design_D568.json",
+ "exit_code": 1,
+ "checker": {
+  "design_id": "design_D568",
+  "design_type": "fixed",
+  "rules_version": "1",
+  "data_checked": true,
+  "blocked": true,
+  "summary": {
+   "차단": 2,
+   "경고": 0,
+   "통과": 4,
+   "기록": 1
+  },
+  "findings": [
+   {
+    "question": "Q1",
+    "verdict": "차단",
+    "target": "features.cr_last",
+    "reason": "특징의 확인 가능 시각이 기준 시점(tp) 뒤일 수 있다 (tₚ = discharge). labs.value: 창이 collect_time 기준이라 report_time까지 지연 상한 없음 → 확인 가능 시각 상한 없음(tₚ 뒤일 수 있음). 규칙(1층): 검사 값은 보고 시각에 알려진다 (채취 시각이 아님) 데이터: 1,442/6,855 예측 행에서 확인 가능 시각 > tp."
+   },
+   {
+    "question": "Q2",
+    "verdict": "차단",
+    "target": "split.key",
+    "reason": "분할 묶음 patient_id(patient)이 선언된 독립 단위 family보다 작아 같은 family의 행이 학습·평가에 함께 들어갈 수 있다. 데이터: family 210/423개가 둘 이상의 배정에 나뉨."
+   },
+   {
+    "question": "Q6",
+    "verdict": "기록",
+    "target": "attempts",
+    "reason": "설계 1개, 모델 1개 시도, 보정: none."
+   },
+   {
+    "question": "Q3",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "전처리 3단계의 적합 범위 = 학습 부분"
+   },
+   {
+    "question": "Q4",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징이 결과 행·결과 창·대리 변수와 겹치지 않음"
+   },
+   {
+    "question": "Q5",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "포함·제외 기준 2개의 확인 가능 시각 ≤ tp"
+   },
+   {
+    "question": "Q7",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "결과 확인 강도가 층마다 같음 (또는 층별로 다룸, 또는 측정 의존 결과 아님)"
+   }
+  ]
+ }
+}

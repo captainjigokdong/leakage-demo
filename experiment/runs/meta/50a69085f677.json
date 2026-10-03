@@ -1,0 +1,167 @@
+{
+ "report_id": "50a69085f677",
+ "status": "done",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "ok",
+   "reasons": [],
+   "exit_code": 0,
+   "seconds": 112.6,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/50a69085f677-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 11,
+    "duration_ms": 111058,
+    "total_cost_usd": 0.47309720000000005,
+    "usage": {
+     "input_tokens": 22,
+     "cache_creation_input_tokens": 24431,
+     "cache_read_input_tokens": 222006,
+     "output_tokens": 11658,
+     "output_tokens_details": {
+      "thinking_tokens": 1944
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 24431,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1244,
+       "cache_read_input_tokens": 28267,
+       "cache_creation_input_tokens": 2125,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2125
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 22,
+      "outputTokens": 11658,
+      "cacheReadInputTokens": 222006,
+      "cacheCreationInputTokens": 24431,
+      "webSearchRequests": 0,
+      "costUSD": 0.47309720000000005,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 1944,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01AgPKEriRNM6QKExWRyXv6r",
+      "tool_input": {
+       "command": "mkdir -p /srv/leakruns/50a69085f677-t1/ws/prep; cd /srv/leakruns/50a69085f677-t1/ws/prep; cat > prepare.py <<'EOF'\n\"\"\"design_E0E0 모델링 준비: 코호트·결과·특징 테이블과 분할 생성 (학습 없음).\"\"\"\nimport json\nimport numpy as np\nimport pandas as pd\n\nD = \"../data/\"\ndesign = json.load(open(\"../design_E0E0.json\"))\np = pd.read_csv(D + \"patients.csv.gz\")\na = pd.read_csv(D + \"admissions.csv.gz\", parse_dates=[\"admit_time\", \"discharge_time\"])\ndx = pd.read_csv(D + \"diagnoses.csv.gz\")\nlabs = pd.read_csv(D + \"labs.csv.gz\", parse_dates=[\"report_time\"])\norders = pd.read_csv(D + \"orders.csv.gz\", parse_dates=[\"order_time\"])\n\n# tp = 퇴원 시각 + 0h\na = a.sort_values([\"patient_id\", \"admit_time\"]).reset_index(drop=True)\na[\"tp\"] = a[\"discharge_time\"]\ndata_end = a[\"discharge_time\"].max()\n\n# 결과: 다음 입원의 admit_time 이 (tp, tp+30d] 안\na[\"next_admit\"] = a.groupby(\"patient_id\")[\"admit_time\"].shift(-1)\na[\"readmit_30d\"] = ((a[\"next_admit\"] > a[\"tp\"]) &\n                    (a[\"next_admit\"] <= a[\"tp\"] + pd.Timedelta(days=30))).astype(int)\na[\"followup_complete\"] = (a[\"tp\"] + pd.Timedelta(days=30)) <= data_end\n\n# 코호트\nc = a.merge(p, on=\"patient_id\", how=\"left\")\nc = c[c[\"age\"] >= 18]\nc = c[c[\"discharge_status\"] != \"died\"].copy()\n\n# 특징\nc[\"los_h\"] = (c[\"discharge_time\"] - c[\"admit_time\"]).dt.total_seconds() / 3600\nc[\"n_prior_adm\"] = c.groupby(\"patient_id\").cumcount()  # 같은 환자의 이전 입원 수 (사망 입원 제외 전 기준으로 다시 계산)\nc[\"n_prior_adm\"] = c[\"admission_id\"].map(a.groupby(\"patient_id\").cumcount().set_axis(a[\"admission_id\"]))\n\n# 진단: 시각 없음 → 해당(index) 입원 진단만 사용, ICD 앞자리(prefix) 매칭\ndxi = dx[dx[\"admission_id\"].isin(c[\"admission_id\"])]\nc[\"n_dx\"] = c[\"admission_id\"].map(dxi.groupby(\"admission_id\").size()).fillna(0).astype(int)\nfor name, pre in [(\"dx_ckd\", \"N18\"), (\"dx_chf\", \"I50\")]:\n    ids = set(dxi.loc[dxi[\"icd_code\"].str.startswith(pre), \"admission_id\"])\n    c[name] = c[\"admission_id\"].isin(ids).astype(int)\n\ndef windowed(df, tcol):\n    m = df.merge(c[[\"admission_id\", \"admit_time\", \"tp\"]], on=\"admission_id\")\n    return m[(m[tcol] >= m[\"admit_time\"]) & (m[tcol] <= m[\"tp\"])]\n\nlw = windowed(labs, \"report_time\")\nc[\"hgb_min\"] = c[\"admission_id\"].map(lw[lw[\"test\"] == \"hemoglobin\"].groupby(\"admission_id\")[\"value\"].min())\ncr = lw[lw[\"test\"] == \"creatinine\"].sort_values(\"report_time\")\nc[\"cr_last\"] = c[\"admission_id\"].map(cr.groupby(\"admission_id\")[\"value\"].last())\now = windowed(orders, \"order_time\")\nc[\"dialysis_ordered\"] = c[\"admission_id\"].isin(\n    ow.loc[ow[\"order_type\"] == \"dialysis_order\", \"admission_id\"]).astype(int)\n\n# 분할: split_unit=family. family_id 결측(≈80% 환자)은 patient_id 로 대체한 그룹 단위 holdout\nc[\"group_id\"] = c[\"family_id\"].fillna(c[\"patient_id\"])\nrng = np.random.default_rng(design[\"split\"][\"seed\"])\ngroups = c[\"group_id\"].unique()\nrng.shuffle(groups)\ntest_groups = set(groups[: int(round(len(groups) * design[\"split\"][\"test_fraction\"]))])\nc[\"split\"] = np.where(c[\"group_id\"].isin(test_groups), \"test\", \"train\")\n\nfeats = [f[\"name\"] for f in design[\"features\"]]\nout = c[[\"admission_id\", \"patient_id\", \"family_id\", \"group_id\", \"tp\", \"followup_complete\",\n         \"split\", \"readmit_30d\"] + feats]\nout.to_csv(\"model_table.csv\", index=False)\n\nprint(\"cohort\", len(out), \"patients\", out.patient_id.nunique(), \"groups\", out.group_id.nunique())\nprint(\"outcome rate\", out.readmit_30d.mean().round(4), \"incomplete followup\", (~out.followup_complete).sum())\nprint(out.groupby(\"split\").agg(n=(\"readmit_30d\", \"size\"), rate=(\"readmit_30d\", \"mean\")))\nprint(out.groupby(\"discharge_status\").readmit_30d.agg([\"size\", \"mean\"]))\nprint(\"missing:\\n\", out[feats].isna().sum()[lambda s: s > 0])\nprint(\"group overlap train/test:\", len(set(out[out.split == \"train\"].group_id) & set(out[out.split == \"test\"].group_id)))\n# 참고: 설계서대로 admission_id 로 나누면 같은 환자가 양쪽에 들어가는 정도\nrng2 = np.random.default_rng(design[\"split\"][\"seed\"])\nte = rng2.random(len(out)) < 0.3\nprint(\"admission_id 분할 시 train/test 공유 환자 수:\",\n      len(set(out.patient_id[te]) & set(out.patient_id[~te])),\n      \"/ 공유 가족:\", len(set(out.family_id[te].dropna()) & set(out.family_id[~te].dropna())))\nEOF\npython3 prepare.py",
+       "description": "Write and run preparation script"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_018VqFRKJhZ2wbftkopvmuwG",
+      "tool_input": {
+       "command": "cp /srv/leakruns/50a69085f677-t1/tmp/claude-0/-srv-leakruns-50a69085f677-t1-ws/f248d023-f252-4eaa-850b-d1b7cb29ef61/scratchpad/prepare.py /srv/leakruns/50a69085f677-t1/ws/prepare.py",
+       "description": "Copy prep script into workspace"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 8,
+     "Write": 2
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": []
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 2,
+    "by_tool": {
+     "Bash": 2
+    },
+    "checker_denied": 0,
+    "commands": [
+     "mkdir -p /srv/leakruns/50a69085f677-t1/ws/prep; cd /srv/leakruns/50a69085f677-t1/ws/prep; cat > prepare.py <<'EOF'\n\"\"\"design_E0E0 모델링 준비: 코호트·결과·특징 테이블과 분할 생성 (학습 없음).\"\"\"\nimport json\nimport numpy as n",
+     "cp /srv/leakruns/50a69085f677-t1/tmp/claude-0/-srv-leakruns-50a69085f677-t1-ws/f248d023-f252-4eaa-850b-d1b7cb29ef61/scratchpad/prepare.py /srv/leakruns/50a69085f677-t1/ws/prepare.py"
+    ]
+   },
+   "no_checker_after_denial": false
+  }
+ ],
+ "retries": 0,
+ "retry_reasons": []
+}

@@ -1,0 +1,163 @@
+{
+ "try": 3,
+ "status": "fail",
+ "reasons": [
+  "오염: 허용되지 않은 접근"
+ ],
+ "exit_code": 0,
+ "seconds": 89.1,
+ "init": {
+  "model": "claude-opus-5-5",
+  "skills": [
+   "anthropic-skills:built-in-browser",
+   "anthropic-skills:chrome-browser",
+   "anthropic-skills:computer-use",
+   "anthropic-skills:deep-research",
+   "anthropic-skills:docs",
+   "anthropic-skills:docx",
+   "anthropic-skills:google-workspace",
+   "anthropic-skills:import-memory",
+   "anthropic-skills:morning",
+   "anthropic-skills:pdf",
+   "anthropic-skills:pptx",
+   "anthropic-skills:skill-creator",
+   "anthropic-skills:xlsx",
+   "artifact-capabilities",
+   "artifact-diagramming",
+   "batch",
+   "claude-api",
+   "code-review",
+   "dataviz",
+   "debug",
+   "deep-research",
+   "design",
+   "design-sync",
+   "doctor",
+   "fewer-permission-prompts",
+   "leakage-check",
+   "loop",
+   "plugin-authoring",
+   "run",
+   "run-skill-generator",
+   "simplify",
+   "slides",
+   "update-config",
+   "verify",
+   "workflow-authoring"
+  ],
+  "tools": [
+   "Bash",
+   "Glob",
+   "Grep",
+   "Read",
+   "Skill",
+   "Write"
+  ],
+  "mcp_servers": [],
+  "cwd": "/srv/leakruns/358d04627f6f-t3/ws",
+  "permission_mode": "dontAsk"
+ },
+ "result": {
+  "subtype": "success",
+  "is_error": false,
+  "num_turns": 11,
+  "duration_ms": 87720,
+  "total_cost_usd": 0.40728100000000006,
+  "usage": {
+   "input_tokens": 20,
+   "cache_creation_input_tokens": 25698,
+   "cache_read_input_tokens": 195685,
+   "output_tokens": 8124,
+   "output_tokens_details": {
+    "thinking_tokens": 1938
+   },
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 25698,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1668,
+     "cache_read_input_tokens": 28500,
+     "cache_creation_input_tokens": 3159,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 3159
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard",
+   "fallback_credit": null
+  },
+  "modelUsage": {
+   "claude-opus-5-5": {
+    "inputTokens": 20,
+    "outputTokens": 8124,
+    "cacheReadInputTokens": 195685,
+    "cacheCreationInputTokens": 25698,
+    "webSearchRequests": 0,
+    "costUSD": 0.40728100000000006,
+    "contextWindow": 1000000,
+    "maxOutputTokens": 128000,
+    "thinkingTokens": 1938,
+    "canonicalModel": "claude-opus-5-5",
+    "provider": "firstParty",
+    "costBasis": "list"
+   }
+  },
+  "terminal_reason": "completed",
+  "permission_denials": [],
+  "api_error_status": null
+ },
+ "audit": {
+  "tool_counts": {
+   "Bash": 7,
+   "Skill": 1,
+   "Write": 1
+  },
+  "checker_invoked": true,
+  "skill_tool_invoked": true,
+  "skill_md_read": false,
+  "violations": [
+   {
+    "tool": "Bash",
+    "path": "../ws/data",
+    "why": "상위 폴더 탐색 (..)"
+   }
+  ]
+ },
+ "inputs_changed": [],
+ "lchome_files": [
+  "designs/schema.json",
+  "leakcheck/__init__.py",
+  "leakcheck/checks.py",
+  "leakcheck/design.py",
+  "leakcheck/features.py",
+  "leakcheck/lock.py",
+  "leakcheck/outcomes.py",
+  "leakcheck/rules.py",
+  "leakcheck/splitting.py",
+  "leakcheck/tagging.py",
+  "leakcheck/timeline.py",
+  "synth/__init__.py",
+  "synth/generate.py",
+  "synth/stats.py"
+ ],
+ "findings_block": true,
+ "permission_denials": {
+  "count": 0,
+  "by_tool": {},
+  "checker_denied": 0,
+  "commands": []
+ },
+ "no_checker_after_denial": false,
+ "result_text": "# design_9672 모델링 준비 보고\n\n모델링 준비는 결정 카드를 만드는 단계까지 했습니다. 진행하기 전에 확인이 필요한 설계 문제가 하나 있습니다. **이번 입원의 진단 코드로 만든 특징 3개(`dx_chf`, `n_dx`, `dx_ckd`)가 퇴원 시각(tₚ+0h)에 실제로 있는지**입니다. 모델 학습과 성능 계산은 하지 않았고, 설계서와 데이터 파일은 고치지 않았습니다. 전체 보고서는 `report_design_9672.md`에 있습니다.\n\n## 1. 자동 점검 결과\n- 점검 도구(`leakage-check`)를 데이터 전체 행에 대해 돌린 결과 **차단 0건, 경고 0건**입니다. 6개 질문(Q1~Q5, Q7)은 통과했고, Q6(시도 횟수)는 설계 1개·모델 1개·보정 없음으로 기록됐습니다.\n- `family_id`는 환자의 80%에서 비어 있습니다. 점검 코드는 이런 환자를 `patient_id` 단위로 묶어 처리하므로 분할 키에는 문제가 없습니다.\n\n## 2. 결정 카드 (표본 수와 결과율만, 성능 없음)\n- 예측 행 6,855건, 환자 4,888명입니다.\n- 30일 재입원율은 14.7%(1,006건)입니다.\n- 원내 사망으로 167건이 제외됐고, 성인 기준으로 빠진 행은 없습니다.\n- 병동별로 보면 ICU는 1,563건에 재입원율 22.3%, 일반 병동(ward)은 5,292건에 12.4%입니다.\n\n## 3. 점검 밖 의견\n1. **진단 코드의 가용 시점**: 진단 테이블에는 시각 열이 없습니다. 이 특징들이 통과한 것은 점검 규칙표가 진단 코딩 지연을 0시간으로 가정하기 때문입니다. 규칙표 주석에도 실제 병원은 퇴원 뒤에 코딩이 늦게 끝난다고 적혀 있습니다. 지연이 있다면 퇴원 시점에는 이 값을 알 수 없으니 차단 대상입니다. 지연을 실제로 확인하거나, 특징을 이전 입원의 진단(`scope: prior_admissions`)으로 바꾸는 방법이 있습니다. 규칙표는 고치지 않았습니다.\n2. **나이의 기준 시점**: `patients.age`에는 시점 정보가 없는데, 입원 기간이 1년을 넘는 환자가 511명입니다. 이 나이가 언제 기준인지 확인이 필요합니다. 18세 미만이 없어서 성인 포함 기준에는 영향이 없으므로 아래 목록에는 넣지 않았습니다.\n3. **추적 종료와 관측되지 않는 사건**: 데이터 끝 무렵 퇴원은 30일 추적이 다 되지 않았는데도 결과 0으로 들어갑니다. 퇴원 뒤 사망과 다른 병원 재입원도 데이터에 없습니다. 영향은 작아 보이지만 한계로 적어 두기를 권합니다.\n\n## 4. 다음 단계\n진단 특징 문제를 정한 뒤 결정 카드를 승인해 주세요. 승인으로 설정을 잠그기(DecisionLock) 전에는 성능을 계산하지 않습니다.\n\n```findings\n[\n  {\"target\": \"features.dx_chf\", \"problem\": \"시각 열이 없는 이번 입원의 진단 코드를 퇴원 시각(tₚ+0h)에 쓴다. 규칙표의 코딩 지연 0h 가정 덕분에 통과했을 뿐, 실제로는 퇴원 뒤에 코딩되므로 예측 시점에 없을 수 있다. 사람이 확인해야 한다.\"},\n  {\"target\": \"features.n_dx\", \"problem\": \"이번 입원의 진단 코드 수를 퇴원 시각에 쓴다. 코딩 지연이 0이 아니면 tₚ에 알 수 없는 값이므로, 지연 가정을 확인하거나 이전 입원의 진단으로 바꿔야 한다.\"},\n  {\"target\": \"features.dx_ckd\", \"problem\": \"이번 입원의 N18 진단 코드를 퇴원 시각에 쓴다. 코딩 지연 0h 가정에 기대고 있어서, 지연이 있으면 가용 시점(Q1) 위반이다.\"}\n]\n```"
+}

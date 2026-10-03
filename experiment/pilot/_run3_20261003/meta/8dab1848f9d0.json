@@ -1,0 +1,663 @@
+{
+ "report_id": "8dab1848f9d0",
+ "status": "failed",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 271.6,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/8dab1848f9d0-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 1,
+    "duration_ms": 34197,
+    "total_cost_usd": 0.8966911999999999,
+    "usage": {
+     "input_tokens": 4,
+     "cache_creation_input_tokens": 2524,
+     "cache_read_input_tokens": 40652,
+     "output_tokens": 2895,
+     "output_tokens_details": {
+      "thinking_tokens": 747
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 2524,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 4,
+       "output_tokens": 2895,
+       "cache_read_input_tokens": 40652,
+       "cache_creation_input_tokens": 2524,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2524
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 54,
+      "outputTokens": 20208,
+      "cacheReadInputTokens": 999651,
+      "cacheCreationInputTokens": 47758,
+      "webSearchRequests": 0,
+      "costUSD": 0.8966911999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 3282,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Agent": 1,
+     "Bash": 20,
+     "Glob": 1,
+     "Read": 3,
+     "Write": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Agent",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t1-ws/018db0d6-2610-4a5b-bf48-42aac2a100c8/scratchpad",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Write",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t1-ws/018db0d6-2610-4a5b-bf48-42aac2a100c8/scratchpad/inspect1.py",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Bash",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t1-ws/018db0d6-2610-4a5b-bf48-42aac2a100c8/scratchpad/inspect1.py",
+      "why": "실행 폴더 밖 금지 경로"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 0,
+    "by_tool": {},
+    "checker_denied": 0,
+    "commands": []
+   }
+  },
+  {
+   "try": 2,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 116.8,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/8dab1848f9d0-t2/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 17,
+    "duration_ms": 115232,
+    "total_cost_usd": 0.5572784000000001,
+    "usage": {
+     "input_tokens": 28,
+     "cache_creation_input_tokens": 25475,
+     "cache_read_input_tokens": 572732,
+     "output_tokens": 11941,
+     "output_tokens_details": {
+      "thinking_tokens": 2492
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 25475,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1684,
+       "cache_read_input_tokens": 49162,
+       "cache_creation_input_tokens": 2533,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2533
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 28,
+      "outputTokens": 11941,
+      "cacheReadInputTokens": 572732,
+      "cacheCreationInputTokens": 25475,
+      "webSearchRequests": 0,
+      "costUSD": 0.5572784000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2492,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01KYjqYZ1cMGWPV9ZF7jv7mK",
+      "tool_input": {
+       "command": "cd /srv/leakruns/8dab1848f9d0-t2/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01EaKS4waZSddMm8FH5VTjDi",
+      "tool_input": {
+       "command": "cd /srv/leakruns/8dab1848f9d0-t2/ws/data; python3 -c \"\nimport gzip,csv,collections as C\nfrom datetime import datetime as D,timedelta as T\nrd=lambda f:list(csv.DictReader(gzip.open(f+'.csv.gz','rt')))\nt=lambda s:D.strptime(s,'%Y-%m-%d %H:%M:%S')\nA=rd('admissions');L=rd('labs')\ncr=C.defaultdict(list)\nfor l in L:\n  if l['test']=='creatinine': cr[l['admission_id']].append((t(l['collect_time']),t(l['report_time']),float(l['value'])))\ndef kd(series,lo,hi,ct):\n  # any sample in [lo,hi) by time idx ct meets KDIGO vs prior samples\n  for i,s in enumerate(series):\n    if not(lo<=s[ct]<hi): continue\n    prev=[p for p in series if p[0]<s[0]]\n    if any(s[0]-p[0]<=T(hours=48) and s[2]-p[2]>=0.3 for p in prev) or any(s[0]-p[0]<=T(days=7) and s[2]>=1.5*p[2] for p in prev): return True\n  return False\nst=C.Counter()\nfor a in A:\n  ad,dc=t(a['admit_time']),t(a['discharge_time']);s=sorted(cr[a['admission_id']])\n  for h in [24,48,72,96,120,144,168]:\n    tp=ad+T(hours=h)\n    if tp>dc: st['tp_after_dc']+=1; continue\n    if kd(s,ad,tp,1): st['excl']+=1; continue\n    st['rows']+=1\n    y=kd(s,tp,tp+T(hours=48),0)\n    cens=dc<tp+T(hours=48)\n    st[('cens',cens,a['discharge_status'])]+=1\n    st[('y',a['unit'],y)]+=1\n    if any(c<tp<=r for c,r,v in s): st['pending_cr_at_tp']+=1\n    if any(c<tp<=r for c,r,v in s) and y: st['pending_and_y']+=1\n    st[('ncr48',a['unit'])]+=sum(tp<=c<tp+T(hours=48) for c,r,v in s)\nfor k,v in sorted(st.items(),key=str): print(k,v)\n\""
+      }
+     },
+     {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01EE9w42UNnXCPFUzucLnEFZ",
+      "tool_input": {
+       "file_path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t2-ws/a18cf4e3-1f7f-4cb5-bb99-fe4b4fd47f3d/scratchpad/check.py",
+       "content": "import gzip, csv, collections as C\nfrom datetime import datetime as D, timedelta as T\nDATA = '/srv/leakruns/8dab1848f9d0-t2/ws/data/'\nrd = lambda f: list(csv.DictReader(gzip.open(DATA + f + '.csv.gz', 'rt')))\nt = lambda s: D.strptime(s, '%Y-%m-%d %H:%M:%S')\nA = rd('admissions'); L = rd('labs')\ncr = C.defaultdict(list)\nfor l in L:\n    if l['test'] == 'creatinine':\n        cr[l['admission_id']].append((t(l['collect_time']), t(l['report_time']), float(l['value'])))\n\n\ndef kd(series, lo, hi, ct):\n    for s in series:\n        if not (lo <= s[ct] < hi):\n            continue\n        prev = [p for p in series if p[0] < s[0]]\n        if any(s[0] - p[0] <= T(hours=48) and s[2] - p[2] >= 0.3 for p in prev) or \\\n           any(s[0] - p[0] <= T(days=7) and s[2] >= 1.5 * p[2] for p in prev):\n            return True\n    return False\n\n\nst = C.Counter()\nfor a in A:\n    ad, dc = t(a['admit_time']), t(a['discharge_time']); s = sorted(cr[a['admission_id']])\n    for h in [24, 48, 72, 96, 120, 144, 168]:\n        tp = ad + T(hours=h)\n        if tp > dc:\n            st['tp_after_dc'] += 1; continue\n        if kd(s, ad, tp, 1):\n            st['excl'] += 1; continue\n        st['rows'] += 1\n        y = kd(s, tp, tp + T(hours=48), 0)\n        cens = dc < tp + T(hours=48)\n        st[('cens', cens, a['discharge_status'])] += 1\n        st[('y', a['unit'], y)] += 1\n        st[('y_cens', cens, y)] += 1\n        pend = any(c < tp <= r for c, r, v in s)\n        st[('pending_cr_at_tp', pend, y)] += 1\n        st[('ncr48', a['unit'])] += sum(tp <= c < tp + T(hours=48) for c, r, v in s)\nfor k, v in sorted(st.items(), key=str):\n    print(k, v)\n"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01W3RVUoUKaugFba23rQpk6g",
+      "tool_input": {
+       "command": "mkdir -p /srv/leakruns/8dab1848f9d0-t2/ws/prep && ls /srv/leakruns/8dab1848f9d0-t2/ws"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 10,
+     "Read": 2,
+     "Write": 4
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Bash",
+      "path": "'/'",
+      "why": "최상위 폴더 조회 (/)"
+     },
+     {
+      "tool": "Bash",
+      "path": "'/'",
+      "why": "최상위 폴더 조회 (/)"
+     },
+     {
+      "tool": "Write",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t2-ws/a18cf4e3-1f7f-4cb5-bb99-fe4b4fd47f3d/scratchpad/check.py",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Bash",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t2-ws/a18cf4e3-1f7f-4cb5-bb99-fe4b4fd47f3d/scratchpad/check.py",
+      "why": "실행 폴더 밖 금지 경로"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 4,
+    "by_tool": {
+     "Bash": 3,
+     "Write": 1
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/8dab1848f9d0-t2/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done",
+     "cd /srv/leakruns/8dab1848f9d0-t2/ws/data; python3 -c \"\nimport gzip,csv,collections as C\nfrom datetime import datetime as D,timedelta as T\nrd=lambda f:list(csv.DictReader(gzip.open(f+'.csv.gz','rt')))\n",
+     "Write",
+     "mkdir -p /srv/leakruns/8dab1848f9d0-t2/ws/prep && ls /srv/leakruns/8dab1848f9d0-t2/ws"
+    ]
+   }
+  },
+  {
+   "try": 3,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 110.7,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/8dab1848f9d0-t3/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 8,
+    "duration_ms": 109315,
+    "total_cost_usd": 0.5283448,
+    "usage": {
+     "input_tokens": 12,
+     "cache_creation_input_tokens": 19642,
+     "cache_read_input_tokens": 213257,
+     "output_tokens": 7965,
+     "output_tokens_details": {
+      "thinking_tokens": 1733
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 19642,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1648,
+       "cache_read_input_tokens": 41116,
+       "cache_creation_input_tokens": 4746,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 4746
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 26,
+      "outputTokens": 10959,
+      "cacheReadInputTokens": 411199,
+      "cacheCreationInputTokens": 33579,
+      "webSearchRequests": 0,
+      "costUSD": 0.5283448,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2028,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01MUtUyiT5KDnxWcoCqymMoJ",
+      "tool_input": {
+       "command": "cd /srv/leakruns/8dab1848f9d0-t3/ws; ls -la . data; cat design_4BE0.json; for f in data/*; do echo \"== $f\"; head -5 \"$f\"; wc -l \"$f\"; done"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01Mzkub7LxQHEQbWgZ8d8utM",
+      "tool_input": {
+       "command": "cd /srv/leakruns/8dab1848f9d0-t3/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.gz; do echo \"== $f\"; zcat $f | head -6; zcat $f | wc -l; done",
+       "description": "Show manifests and heads of each CSV"
+      }
+     },
+     {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_01848TB6xhkjJRtPmftBphNn",
+      "tool_input": {
+       "file_path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t3-ws/6aef52c4-599d-41b9-81bf-2cf90cbd2f07/scratchpad/profile.py",
+       "content": "import csv, gzip, collections, statistics\nfrom datetime import datetime\nD = '/srv/leakruns/8dab1848f9d0-t3/ws/data/'\nT = ['patients', 'admissions', 'labs', 'diagnoses', 'procedures', 'orders', 'outpatient_visits']\n\ndef load(t):\n    with gzip.open(D + t + '.csv.gz', 'rt', newline='') as f:\n        r = csv.DictReader(f)\n        return r.fieldnames, list(r)\n\ndef infer(vals):\n    v = [x for x in vals if x != '']\n    if not v: return 'empty'\n    def ok(fn):\n        try:\n            for x in v[:5000]: fn(x)\n            return True\n        except Exception: return False\n    if ok(int): return 'int'\n    if ok(float): return 'float'\n    if ok(lambda x: datetime.fromisoformat(x)): return 'datetime'\n    return 'str'\n\ndata = {}\nfor t in T:\n    cols, rows = load(t)\n    data[t] = rows\n    print(f'\\n######## {t}: rows={len(rows)} cols={cols}')\n    for r in rows[:5]: print('  ', [r[c] for c in cols])\n    for c in cols:\n        vals = [r[c] for r in rows]\n        dt = infer(vals)\n        nmiss = sum(1 for x in vals if x == '')\n        nu = len(set(vals))\n        line = f'  - {c}: {dt}, missing={nmiss}, nunique={nu}'\n        if dt in ('int', 'float') and nu > 0:\n            nums = [float(x) for x in vals if x != '']\n            line += f', min={min(nums)}, median={statistics.median(nums)}, max={max(nums)}'\n        if dt == 'datetime':\n            nn = sorted(x for x in vals if x)\n            line += f', min={nn[0]}, max={nn[-1]}'\n        print(line)\n        if dt == 'str' or (dt == 'int' and nu <= 30):\n            if nu <= 200 or dt == 'str' and nu < len(rows) * 0.5:\n                vc = collections.Counter(vals).most_common(15)\n                print('      top15:', vc)\n\nimport pickle\npickle.dump(data, open('/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t3-ws/6aef52c4-599d-41b9-81bf-2cf90cbd2f07/scratchpad/data.pkl', 'wb'))\n"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01NbQPWYbEhuZ4P3jwBPrdix",
+      "tool_input": {
+       "command": "zcat /srv/leakruns/8dab1848f9d0-t3/ws/data/patients.csv.gz | head -6",
+       "description": "Show first rows of patients table"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Agent": 1,
+     "Bash": 4,
+     "Glob": 1,
+     "Read": 6,
+     "Write": 2
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Agent",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t3-ws/6aef52c4-599d-41b9-81bf-2cf90cbd2f07/scratchpad",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Write",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t3-ws/6aef52c4-599d-41b9-81bf-2cf90cbd2f07/scratchpad/profile.py",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Write",
+      "path": "/tmp/claude-0/-srv-leakruns-8dab1848f9d0-t3-ws/6aef52c4-599d-41b9-81bf-2cf90cbd2f07/scratchpad/data.pkl",
+      "why": "실행 폴더 밖 금지 경로"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 4,
+    "by_tool": {
+     "Bash": 3,
+     "Write": 1
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/8dab1848f9d0-t3/ws; ls -la . data; cat design_4BE0.json; for f in data/*; do echo \"== $f\"; head -5 \"$f\"; wc -l \"$f\"; done",
+     "cd /srv/leakruns/8dab1848f9d0-t3/ws/data; cat MANIFEST.json OUTPATIENT_MANIFEST.json; for f in *.gz; do echo \"== $f\"; zcat $f | head -6; zcat $f | wc -l; done",
+     "Write",
+     "zcat /srv/leakruns/8dab1848f9d0-t3/ws/data/patients.csv.gz | head -6"
+    ]
+   }
+  }
+ ],
+ "retries": 2,
+ "retry_reasons": [
+  "오염: 허용되지 않은 접근",
+  "오염: 허용되지 않은 접근",
+  "오염: 허용되지 않은 접근"
+ ]
+}

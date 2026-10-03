@@ -1,0 +1,145 @@
+{
+ "report_id": "e3cb8f54fd0b",
+ "status": "done",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "ok",
+   "reasons": [],
+   "exit_code": 0,
+   "seconds": 96.0,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Bash",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/e3cb8f54fd0b-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 8,
+    "duration_ms": 94279,
+    "total_cost_usd": 0.36497520000000006,
+    "usage": {
+     "input_tokens": 16,
+     "cache_creation_input_tokens": 20009,
+     "cache_read_input_tokens": 136696,
+     "output_tokens": 8875,
+     "output_tokens_details": {
+      "thinking_tokens": 2490
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 20009,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1432,
+       "cache_read_input_tokens": 23265,
+       "cache_creation_input_tokens": 2705,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2705
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 16,
+      "outputTokens": 8875,
+      "cacheReadInputTokens": 136696,
+      "cacheCreationInputTokens": 20009,
+      "webSearchRequests": 0,
+      "costUSD": 0.36497520000000006,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2490,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 6,
+     "Write": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": []
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 0,
+    "by_tool": {},
+    "checker_denied": 0,
+    "commands": []
+   },
+   "no_checker_after_denial": false
+  }
+ ],
+ "retries": 0,
+ "retry_reasons": []
+}
