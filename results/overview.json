@@ -1,0 +1,290 @@
+{
+ "blank_rows": {
+  "3c616d816bd0": "가"
+ },
+ "sets": {
+  "main": {
+   "primary": {
+    "H1_diff": 0.12323943661971826,
+    "H1_ci95": [
+     0.051587301587301515,
+     0.20317590424147794
+    ],
+    "H1_fa_clean_ga": 1.3333333333333333,
+    "H1_met": false,
+    "detection": {
+     "가": 0.8732394366197183,
+     "나": 0.75
+    },
+    "H2_all_holdout": {
+     "가": {
+      "observed": 0.782608695652174,
+      "expected_random": 0.10217473138078054,
+      "met": true,
+      "p_one_sided": 1.6616224895959232e-16
+     },
+     "나": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.1828498494259364,
+      "met": true,
+      "p_one_sided": 6.1084580784539555e-09
+     }
+    },
+    "H2_unadjusted_holdout": {
+     "가": {
+      "observed": 1.0,
+      "expected_random": 0.08115942028985507,
+      "met": true,
+      "p_one_sided": 6.164214679049876e-11
+     },
+     "나": {
+      "observed": 0.8888888888888888,
+      "expected_random": 0.13719806763285025,
+      "met": true,
+      "p_one_sided": 2.392485822306238e-07
+     }
+    },
+    "checker_only_holdout": 0.6521739130434783
+   },
+   "secondary": {
+    "H1_diff": 0.12265258215962438,
+    "H1_ci95": [
+     0.0,
+     0.23695574836199812
+    ],
+    "H1_fa_clean_ga": 1.3333333333333333,
+    "H1_met": false,
+    "detection": {
+     "가": 0.8309859154929577,
+     "나": 0.7083333333333334
+    },
+    "H2_all_holdout": {
+     "가": {
+      "observed": 0.782608695652174,
+      "expected_random": 0.017185969879731693,
+      "met": true,
+      "p_one_sided": 2.0337454126744353e-30
+     },
+     "나": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.031201486047500532,
+      "met": true,
+      "p_one_sided": 1.0862655467930027e-21
+     }
+    },
+    "H2_unadjusted_holdout": {
+     "가": {
+      "observed": 1.0,
+      "expected_random": 0.013526570048309176,
+      "met": true,
+      "p_one_sided": 6.116690440999486e-18
+     },
+     "나": {
+      "observed": 0.8888888888888888,
+      "expected_random": 0.022866344605475035,
+      "met": true,
+      "p_one_sided": 1.4244242864477561e-13
+     }
+    },
+    "checker_only_holdout": 0.6521739130434783
+   },
+   "unknown_kind": {
+    "가": 9,
+    "나": 45
+   },
+   "reports": {
+    "가": 59,
+    "나": 60
+   }
+  },
+  "first": {
+   "primary": {
+    "H1_diff": 0.125,
+    "H1_ci95": [
+     0.031746031746031744,
+     0.21333333333333337
+    ],
+    "H1_fa_clean_ga": 1.6666666666666667,
+    "H1_met": false,
+    "detection": {
+     "가": 0.8472222222222222,
+     "나": 0.7222222222222222
+    },
+    "H2_all_holdout": {
+     "가": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.12451612397264573,
+      "met": true,
+      "p_one_sided": 7.714062702762316e-13
+     },
+     "나": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.17659984942593634,
+      "met": true,
+      "p_one_sided": 2.612039694022678e-09
+     }
+    },
+    "H2_unadjusted_holdout": {
+     "가": {
+      "observed": 1.0,
+      "expected_random": 0.08115942028985507,
+      "met": true,
+      "p_one_sided": 6.164214679049876e-11
+     },
+     "나": {
+      "observed": 0.8888888888888888,
+      "expected_random": 0.12053140096618359,
+      "met": true,
+      "p_one_sided": 5.316635160680531e-08
+     }
+    },
+    "checker_only_holdout": 0.6521739130434783
+   },
+   "secondary": {
+    "H1_diff": 0.13888888888888884,
+    "H1_ci95": [
+     0.030303030303030276,
+     0.26315789473684215
+    ],
+    "H1_fa_clean_ga": 1.6666666666666667,
+    "H1_met": false,
+    "detection": {
+     "가": 0.8194444444444444,
+     "나": 0.6805555555555556
+    },
+    "H2_all_holdout": {
+     "가": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.02120362527971223,
+      "met": true,
+      "p_one_sided": 7.610081047832218e-26
+     },
+     "나": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.03015981938083386,
+      "met": true,
+      "p_one_sided": 4.330616809706426e-22
+     }
+    },
+    "H2_unadjusted_holdout": {
+     "가": {
+      "observed": 1.0,
+      "expected_random": 0.013526570048309176,
+      "met": true,
+      "p_one_sided": 6.116690440999486e-18
+     },
+     "나": {
+      "observed": 0.8888888888888888,
+      "expected_random": 0.02008856682769726,
+      "met": true,
+      "p_one_sided": 3.165387303217236e-14
+     }
+    },
+    "checker_only_holdout": 0.6521739130434783
+   },
+   "unknown_kind": {
+    "가": 14,
+    "나": 45
+   },
+   "reports": {
+    "가": 60,
+    "나": 60
+   }
+  },
+  "blank": {
+   "primary": {
+    "H1_diff": 0.11111111111111116,
+    "H1_ci95": [
+     0.040000000000000036,
+     0.19047619047619047
+    ],
+    "H1_fa_clean_ga": 1.3333333333333333,
+    "H1_met": false,
+    "detection": {
+     "가": 0.8611111111111112,
+     "나": 0.75
+    },
+    "H2_all_holdout": {
+     "가": {
+      "observed": 0.75,
+      "expected_random": 0.09791745090658134,
+      "met": true,
+      "p_one_sided": 1.6616224895959232e-16
+     },
+     "나": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.1828498494259364,
+      "met": true,
+      "p_one_sided": 6.1084580784539555e-09
+     }
+    },
+    "H2_unadjusted_holdout": {
+     "가": {
+      "observed": 1.0,
+      "expected_random": 0.08115942028985507,
+      "met": true,
+      "p_one_sided": 6.164214679049876e-11
+     },
+     "나": {
+      "observed": 0.8888888888888888,
+      "expected_random": 0.13719806763285025,
+      "met": true,
+      "p_one_sided": 2.392485822306238e-07
+     }
+    },
+    "checker_only_holdout": 0.6521739130434783
+   },
+   "secondary": {
+    "H1_diff": 0.11111111111111105,
+    "H1_ci95": [
+     0.0,
+     0.2272727272727273
+    ],
+    "H1_fa_clean_ga": 1.3333333333333333,
+    "H1_met": false,
+    "detection": {
+     "가": 0.8194444444444444,
+     "나": 0.7083333333333334
+    },
+    "H2_all_holdout": {
+     "가": {
+      "observed": 0.75,
+      "expected_random": 0.01646988780140954,
+      "met": true,
+      "p_one_sided": 2.0337454126744353e-30
+     },
+     "나": {
+      "observed": 0.7083333333333334,
+      "expected_random": 0.031201486047500532,
+      "met": true,
+      "p_one_sided": 1.0862655467930027e-21
+     }
+    },
+    "H2_unadjusted_holdout": {
+     "가": {
+      "observed": 1.0,
+      "expected_random": 0.013526570048309176,
+      "met": true,
+      "p_one_sided": 6.116690440999486e-18
+     },
+     "나": {
+      "observed": 0.8888888888888888,
+      "expected_random": 0.022866344605475035,
+      "met": true,
+      "p_one_sided": 1.4244242864477561e-13
+     }
+    },
+    "checker_only_holdout": 0.6521739130434783
+   },
+   "unknown_kind": {
+    "가": 9,
+    "나": 45
+   },
+   "reports": {
+    "가": 60,
+    "나": 60
+   }
+  }
+ },
+ "variant_hashes_verified": true
+}

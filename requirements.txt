@@ -4,3 +4,4 @@ numpy>=1.26
 pandas>=2.1
 scikit-learn>=1.4
 pytest>=8
+tpot==1.1.0  # 7단계 누수 효과 시연. 설치 시 SETUPTOOLS_USE_DISTUTILS=stdlib 필요(func-timeout, stopit 빌드)

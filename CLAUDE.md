@@ -18,7 +18,7 @@ Cedars-Sinai(Moore 연구실) 3주 연수 계획을 **연수 전에 합성 데�
 
 ## 현재 단계
 
-**7단계: 채점과 분석** (6단계 완료 2026-10-03: 본 실행 120행 중 보고서 119개 + 빈칸 1, 결과는 `experiment/runs/`. 실행 방식·격리·폐기 규칙과 7단계에 할 것은 `docs/phases.md` 6·7단계 기록. 채점 규칙·채점기·지시문·성공 기준은 해시로 잠겨 있어 수정 금지, 버그는 `docs/known_issues.md`에 기록. `skill-frozen` 이후 `leakcheck/`, `skill_src/` 수정 금지. 정답표는 사용자가 암호를 줄 때만 복호화. 완료 시 이 줄을 갱신하고 커밋)
+**7단계 완료 (2026-10-03)** — 계획한 모든 단계 끝. 결과는 `results/report.md` (H1 지지 안 됨: 깨끗한 변형 오경보 기준 미달 / H2 지지), 7단계 기록은 `docs/phases.md`. 채점 규칙·채점기·지시문·성공 기준은 해시로 잠긴 그대로, 버그는 `docs/known_issues.md`. `skill-frozen` 이후 `leakcheck/`, `skill_src/` 수정 금지. 정답표 평문은 커밋하지 않는다.
 
 ## 절대 규칙
 
