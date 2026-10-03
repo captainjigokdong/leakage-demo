@@ -1,0 +1,62 @@
+{
+ "report_id": "067956ad442a",
+ "variant": "design_1D2D.json",
+ "exit_code": 1,
+ "checker": {
+  "design_id": "design_1D2D",
+  "design_type": "dynamic",
+  "rules_version": "1",
+  "data_checked": true,
+  "blocked": true,
+  "summary": {
+   "차단": 2,
+   "경고": 0,
+   "통과": 4,
+   "기록": 1
+  },
+  "findings": [
+   {
+    "question": "Q3",
+    "verdict": "차단",
+    "target": "preprocessing.median_impute",
+    "reason": "impute 단계를 'all' 범위에서 적합한다. 평가 부분의 정보가 학습에 들어간다. 적합 범위는 train(또는 train_fold)이어야 한다."
+   },
+   {
+    "question": "Q5",
+    "verdict": "차단",
+    "target": "cohort.inclusion.cr_monitored",
+    "reason": "포함·제외 기준의 확인 가능 시각이 기준 시점(tp) 뒤일 수 있다 (tₚ = admit+1d). labs.value: 창 끝 discharge (확인 가능 시각 열 report_time 기준) → 확인 가능 시각 상한 없음(tₚ 뒤일 수 있음). 규칙(1층): 검사 값은 보고 시각에 알려진다 (채취 시각이 아님) 데이터: 26,206/26,206 예측 행에서 확인 가능 시각 > tp."
+   },
+   {
+    "question": "Q6",
+    "verdict": "기록",
+    "target": "attempts",
+    "reason": "설계 1개, 모델 1개 시도, 보정: none."
+   },
+   {
+    "question": "Q1",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징 10개의 확인 가능 시각 ≤ tₚ"
+   },
+   {
+    "question": "Q2",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "분할 키 family_id ≥ 독립 단위 family"
+   },
+   {
+    "question": "Q4",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징이 결과 행·결과 창·대리 변수와 겹치지 않음"
+   },
+   {
+    "question": "Q7",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "결과 확인 강도가 층마다 같음 (또는 층별로 다룸, 또는 측정 의존 결과 아님)"
+   }
+  ]
+ }
+}

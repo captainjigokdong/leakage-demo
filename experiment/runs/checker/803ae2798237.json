@@ -1,0 +1,62 @@
+{
+ "report_id": "803ae2798237",
+ "variant": "design_48A5.json",
+ "exit_code": 1,
+ "checker": {
+  "design_id": "design_48A5",
+  "design_type": "dynamic",
+  "rules_version": "1",
+  "data_checked": true,
+  "blocked": true,
+  "summary": {
+   "차단": 3,
+   "경고": 0,
+   "통과": 3,
+   "기록": 1
+  },
+  "findings": [
+   {
+    "question": "Q1",
+    "verdict": "차단",
+    "target": "features.cr_peak_48h",
+    "reason": "특징의 확인 가능 시각이 기준 시점(tp) 뒤일 수 있다 (tₚ = admit+1d). labs.value: 창이 collect_time 기준이라 report_time까지 지연 상한 없음 → 확인 가능 시각 상한 없음(tₚ 뒤일 수 있음). 규칙(1층): 검사 값은 보고 시각에 알려진다 (채취 시각이 아님) 데이터: 15,341/15,341 예측 행에서 확인 가능 시각 > tp."
+   },
+   {
+    "question": "Q4",
+    "verdict": "차단",
+    "target": "features.cr_peak_48h",
+    "reason": "결과를 정한 행(labs, 범위 index_admission, 결과 창 (tp, tp+48h])과 같은 행을 특징이 쓴다 (tₚ = admit+1d)."
+   },
+   {
+    "question": "Q5",
+    "verdict": "차단",
+    "target": "cohort.inclusion.cr_monitored",
+    "reason": "포함·제외 기준의 확인 가능 시각이 기준 시점(tp) 뒤일 수 있다 (tₚ = admit+1d). labs.value: 창 끝 discharge (확인 가능 시각 열 report_time 기준) → 확인 가능 시각 상한 없음(tₚ 뒤일 수 있음). 규칙(1층): 검사 값은 보고 시각에 알려진다 (채취 시각이 아님) 데이터: 26,206/26,206 예측 행에서 확인 가능 시각 > tp."
+   },
+   {
+    "question": "Q6",
+    "verdict": "기록",
+    "target": "attempts",
+    "reason": "설계 1개, 모델 1개 시도, 보정: none."
+   },
+   {
+    "question": "Q2",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "분할 키 family_id ≥ 독립 단위 family"
+   },
+   {
+    "question": "Q3",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "전처리 2단계의 적합 범위 = 학습 부분"
+   },
+   {
+    "question": "Q7",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "결과 확인 강도가 층마다 같음 (또는 층별로 다룸, 또는 측정 의존 결과 아님)"
+   }
+  ]
+ }
+}

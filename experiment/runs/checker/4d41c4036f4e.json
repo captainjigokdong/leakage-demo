@@ -1,0 +1,62 @@
+{
+ "report_id": "4d41c4036f4e",
+ "variant": "design_E0E0.json",
+ "exit_code": 1,
+ "checker": {
+  "design_id": "design_E0E0",
+  "design_type": "fixed",
+  "rules_version": "1",
+  "data_checked": true,
+  "blocked": true,
+  "summary": {
+   "차단": 2,
+   "경고": 0,
+   "통과": 4,
+   "기록": 1
+  },
+  "findings": [
+   {
+    "question": "Q2",
+    "verdict": "차단",
+    "target": "split.key",
+    "reason": "분할 묶음 admission_id(admission)이 선언된 독립 단위 family보다 작아 같은 family의 행이 학습·평가에 함께 들어갈 수 있다. 데이터: family 241/423개가 둘 이상의 배정에 나뉨."
+   },
+   {
+    "question": "Q3",
+    "verdict": "차단",
+    "target": "preprocessing.select_k",
+    "reason": "select 단계를 'all' 범위에서 적합한다. 평가 부분의 정보가 학습에 들어간다. 적합 범위는 train(또는 train_fold)이어야 한다."
+   },
+   {
+    "question": "Q6",
+    "verdict": "기록",
+    "target": "attempts",
+    "reason": "설계 1개, 모델 1개 시도, 보정: none."
+   },
+   {
+    "question": "Q1",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징 12개의 확인 가능 시각 ≤ tₚ"
+   },
+   {
+    "question": "Q4",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징이 결과 행·결과 창·대리 변수와 겹치지 않음"
+   },
+   {
+    "question": "Q5",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "포함·제외 기준 2개의 확인 가능 시각 ≤ tp"
+   },
+   {
+    "question": "Q7",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "결과 확인 강도가 층마다 같음 (또는 층별로 다룸, 또는 측정 의존 결과 아님)"
+   }
+  ]
+ }
+}

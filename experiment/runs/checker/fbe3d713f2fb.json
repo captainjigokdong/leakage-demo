@@ -1,0 +1,62 @@
+{
+ "report_id": "fbe3d713f2fb",
+ "variant": "design_F872.json",
+ "exit_code": 0,
+ "checker": {
+  "design_id": "design_F872",
+  "design_type": "fixed",
+  "rules_version": "1",
+  "data_checked": true,
+  "blocked": false,
+  "summary": {
+   "차단": 0,
+   "경고": 0,
+   "통과": 6,
+   "기록": 1
+  },
+  "findings": [
+   {
+    "question": "Q6",
+    "verdict": "기록",
+    "target": "attempts",
+    "reason": "설계 1개, 모델 1개 시도, 보정: none."
+   },
+   {
+    "question": "Q1",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징 12개의 확인 가능 시각 ≤ tₚ"
+   },
+   {
+    "question": "Q2",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "분할 키 family_id ≥ 독립 단위 family"
+   },
+   {
+    "question": "Q3",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "전처리 3단계의 적합 범위 = 학습 부분"
+   },
+   {
+    "question": "Q4",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "특징이 결과 행·결과 창·대리 변수와 겹치지 않음"
+   },
+   {
+    "question": "Q5",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "포함·제외 기준 2개의 확인 가능 시각 ≤ tp"
+   },
+   {
+    "question": "Q7",
+    "verdict": "통과",
+    "target": "설계 전체",
+    "reason": "결과 확인 강도가 층마다 같음 (또는 층별로 다룸, 또는 측정 의존 결과 아님)"
+   }
+  ]
+ }
+}
