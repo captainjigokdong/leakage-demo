@@ -1,0 +1,697 @@
+{
+ "report_id": "278c665bce74",
+ "status": "failed",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 68.3,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "leakage-check",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/278c665bce74-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 10,
+    "duration_ms": 66456,
+    "total_cost_usd": 0.46019220000000005,
+    "usage": {
+     "input_tokens": 12,
+     "cache_creation_input_tokens": 19138,
+     "cache_read_input_tokens": 218138,
+     "output_tokens": 5549,
+     "output_tokens_details": {
+      "thinking_tokens": 2505
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 19138,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 3878,
+       "cache_read_input_tokens": 43343,
+       "cache_creation_input_tokens": 1106,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 1106
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 16,
+      "outputTokens": 5957,
+      "cacheReadInputTokens": 245496,
+      "cacheCreationInputTokens": 46895,
+      "webSearchRequests": 0,
+      "costUSD": 0.46019220000000005,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 2505,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01QYga8p2MU8b1HDPjt39cJS",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t1/ws; ls -R | head -50; cat design_4BE0.json; ls .claude/skills/leakage-check -R | head -40",
+       "description": "List workspace and show design"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01YcJVRkZgHY7XbspepqZ2zK",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t1/ws/data && ls -la && for f in *.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done",
+       "description": "List data files and show headers and samples"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Agent": 1,
+     "Bash": 2,
+     "Glob": 1,
+     "Read": 4,
+     "Skill": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": true,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Agent",
+      "path": "find /",
+      "why": "최상위 폴더 조회 (/)"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [
+    "designs/schema.json",
+    "leakcheck/__init__.py",
+    "leakcheck/checks.py",
+    "leakcheck/design.py",
+    "leakcheck/features.py",
+    "leakcheck/lock.py",
+    "leakcheck/outcomes.py",
+    "leakcheck/rules.py",
+    "leakcheck/splitting.py",
+    "leakcheck/tagging.py",
+    "leakcheck/timeline.py",
+    "synth/__init__.py",
+    "synth/generate.py",
+    "synth/stats.py"
+   ],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 2,
+    "by_tool": {
+     "Bash": 2
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/278c665bce74-t1/ws; ls -R | head -50; cat design_4BE0.json; ls .claude/skills/leakage-check -R | head -40",
+     "cd /srv/leakruns/278c665bce74-t1/ws/data && ls -la && for f in *.gz; do echo \"== $f\"; zcat $f | head -4; zcat $f | wc -l; done"
+    ]
+   }
+  },
+  {
+   "try": 2,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 151.2,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "leakage-check",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/278c665bce74-t2/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 25,
+    "duration_ms": 149864,
+    "total_cost_usd": 0.9811654000000001,
+    "usage": {
+     "input_tokens": 36,
+     "cache_creation_input_tokens": 61122,
+     "cache_read_input_tokens": 1026427,
+     "output_tokens": 14338,
+     "output_tokens_details": {
+      "thinking_tokens": 5152
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 61122,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1600,
+       "cache_read_input_tokens": 83117,
+       "cache_creation_input_tokens": 4225,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 4225
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 36,
+      "outputTokens": 14338,
+      "cacheReadInputTokens": 1026427,
+      "cacheCreationInputTokens": 61122,
+      "webSearchRequests": 0,
+      "costUSD": 0.9811654000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 5152,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_014efh5dZm4CEn3vgPauDSf4",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t2/ws; cat .claude/skills/leakage-check/scripts/run_check.py | head -60; cat data/MANIFEST.json data/OUTPATIENT_MANIFEST.json; python .claude/skills/leakage-check/scripts/run_check.py design_4BE0.json --data data --json /tmp/claude-0/-srv-leakruns-278c665bce74-t2-ws/aa5a2397-2791-4d0b-b6aa-277765821b4f/scratchpad/result.json; echo EXIT $?",
+       "description": "Inspect check script, manifests, run check"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01CUn51gQqXToDvp1jNGG5uG",
+      "tool_input": {
+       "command": "ls /usr/bin/python3* /usr/local/bin/python3* 2>/dev/null; python3 -c \"import sys; print(sys.executable)\"",
+       "description": "List available Python interpreters"
+      }
+     },
+     {
+      "tool_name": "Write",
+      "tool_use_id": "toolu_012ea1yxLa7drfa7QqZo6Nq1",
+      "tool_input": {
+       "file_path": "/tmp/claude-0/-srv-leakruns-278c665bce74-t2-ws/aa5a2397-2791-4d0b-b6aa-277765821b4f/scratchpad/card.py",
+       "content": "# 결정 카드 근사 (표본 수, 결과율만). pandas가 깨져 있어 표준 라이브러리로 계산한다.\nimport gzip, csv, collections, datetime as dt\nD = '/srv/leakruns/278c665bce74-t2/ws/data/'\nrd = lambda f: list(csv.DictReader(gzip.open(D + f, 'rt')))\nT = dt.datetime.fromisoformat\nH = lambda x: x.timestamp() / 3600\nP = {p['patient_id']: p for p in rd('patients.csv.gz')}\nA = rd('admissions.csv.gz')\ncr = collections.defaultdict(list)\nfor l in rd('labs.csv.gz'):\n    if l['test'] == 'creatinine':\n        cr[l['admission_id']].append((H(T(l['collect_time'])), H(T(l['report_time'])), float(l['value'])))\n\n\ndef kdigo_hits(seq):\n    \"\"\"seq: 채취 순 (h, v). 기준을 만족한 측정의 위치들.\"\"\"\n    out = []\n    for j in range(1, len(seq)):\n        hj, vj = seq[j]\n        p = [v for h, v in seq[:j] if h >= hj - 168]\n        if p and vj >= 1.5 * min(p) - 1e-9:\n            out.append(j); continue\n        r = [v for h, v in seq[:j] if h >= hj - 48]\n        if r and vj - min(r) >= 0.3 - 1e-9:\n            out.append(j)\n    return out\n\n\ndef kdigo_first(seq):\n    h = kdigo_hits(seq)\n    return h[0] if h else None\n\n\nbase = excl = 0\npos = collections.Counter(); n = collections.Counter(); adms = set(); pts = set()\nfor a in A:\n    ad, dc = H(T(a['admit_time'])), H(T(a['discharge_time']))\n    if int(P[a['patient_id']]['age']) < 18:\n        continue\n    rows = sorted(cr[a['admission_id']])\n    for o in (24, 48, 72, 96, 120, 144, 168):\n        tp = ad + o\n        if not tp < dc:\n            continue\n        base += 1\n        known = sorted((c, v) for c, r, v in rows if ad < r <= tp)\n        if kdigo_first(known) is not None:\n            excl += 1; continue\n        seq = sorted((c, v) for c, r, v in rows if tp - 168 < c <= tp + 48)\n        y = any(tp < seq[j][0] <= tp + 48 for j in kdigo_hits(seq))\n        for k in ('all', a['unit']):\n            n[k] += 1; pos[k] += y\n        adms.add(a['admission_id']); pts.add(a['patient_id'])\nprint('예측 행(제외 전)', base, '제외', excl)\nprint('코호트 행', n['all'], '입원', len(adms), '환자', len(pts))\nfor k in n:\n    print(k, n[k], pos[k], round(pos[k] / n[k], 4))\n"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 7,
+     "Glob": 1,
+     "Grep": 3,
+     "Read": 9,
+     "Skill": 1,
+     "Write": 2
+    },
+    "checker_invoked": true,
+    "skill_tool_invoked": true,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Bash",
+      "path": "/tmp/claude-0/-srv-leakruns-278c665bce74-t2-ws/aa5a2397-2791-4d0b-b6aa-277765821b4f/scratchpad/result.json",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Bash",
+      "path": "'/'",
+      "why": "최상위 폴더 조회 (/)"
+     },
+     {
+      "tool": "Write",
+      "path": "/tmp/claude-0/-srv-leakruns-278c665bce74-t2-ws/aa5a2397-2791-4d0b-b6aa-277765821b4f/scratchpad/card.py",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Bash",
+      "path": "/tmp/claude-0/-srv-leakruns-278c665bce74-t2-ws/aa5a2397-2791-4d0b-b6aa-277765821b4f/scratchpad/card.py",
+      "why": "실행 폴더 밖 금지 경로"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [
+    "designs/schema.json",
+    "leakcheck/__init__.py",
+    "leakcheck/checks.py",
+    "leakcheck/design.py",
+    "leakcheck/features.py",
+    "leakcheck/lock.py",
+    "leakcheck/outcomes.py",
+    "leakcheck/rules.py",
+    "leakcheck/splitting.py",
+    "leakcheck/tagging.py",
+    "leakcheck/timeline.py",
+    "synth/__init__.py",
+    "synth/generate.py",
+    "synth/stats.py"
+   ],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 3,
+    "by_tool": {
+     "Bash": 2,
+     "Write": 1
+    },
+    "checker_denied": 1,
+    "commands": [
+     "cd /srv/leakruns/278c665bce74-t2/ws; cat .claude/skills/leakage-check/scripts/run_check.py | head -60; cat data/MANIFEST.json data/OUTPATIENT_MANIFEST.json; python .claude/skills/leakage-check/scripts",
+     "ls /usr/bin/python3* /usr/local/bin/python3* 2>/dev/null; python3 -c \"import sys; print(sys.executable)\"",
+     "Write"
+    ]
+   }
+  },
+  {
+   "try": 3,
+   "status": "fail",
+   "reasons": [
+    "오염: 허용되지 않은 접근"
+   ],
+   "exit_code": 0,
+   "seconds": 90.0,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "leakage-check",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/278c665bce74-t3/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 10,
+    "duration_ms": 88490,
+    "total_cost_usd": 0.402593,
+    "usage": {
+     "input_tokens": 12,
+     "cache_creation_input_tokens": 20516,
+     "cache_read_input_tokens": 219526,
+     "output_tokens": 6908,
+     "output_tokens_details": {
+      "thinking_tokens": 3505
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 20516,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 2961,
+       "cache_read_input_tokens": 43807,
+       "cache_creation_input_tokens": 2929,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 2929
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 16,
+      "outputTokens": 7325,
+      "cacheReadInputTokens": 267255,
+      "cacheCreationInputTokens": 28206,
+      "webSearchRequests": 0,
+      "costUSD": 0.402593,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 3505,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01CcZrHStgySAa2A1SK8giFu",
+      "tool_input": {
+       "command": "cd /srv/leakruns/278c665bce74-t3/ws; ls -R | head -50; cat design_4BE0.json; ls .claude/skills/leakage-check -R | head -40",
+       "description": "List files and show design"
+      }
+     },
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01LGmVDPyxq977yfMivR9zJK",
+      "tool_input": {
+       "command": "ls -la data; ls -la; find /srv/leakruns -iname '*leakcheck*' 2>/dev/null | head -50",
+       "description": "List data files and search for leakcheck package"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Agent": 1,
+     "Bash": 2,
+     "Glob": 1,
+     "Read": 4,
+     "Skill": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": true,
+    "skill_md_read": false,
+    "violations": [
+     {
+      "tool": "Agent",
+      "path": "/srv/leakruns",
+      "why": "실행 폴더 밖 금지 경로"
+     },
+     {
+      "tool": "Bash",
+      "path": "/srv/leakruns",
+      "why": "실행 폴더 밖 금지 경로"
+     }
+    ]
+   },
+   "inputs_changed": [],
+   "lchome_files": [
+    "designs/schema.json",
+    "leakcheck/__init__.py",
+    "leakcheck/checks.py",
+    "leakcheck/design.py",
+    "leakcheck/features.py",
+    "leakcheck/lock.py",
+    "leakcheck/outcomes.py",
+    "leakcheck/rules.py",
+    "leakcheck/splitting.py",
+    "leakcheck/tagging.py",
+    "leakcheck/timeline.py",
+    "synth/__init__.py",
+    "synth/generate.py",
+    "synth/stats.py"
+   ],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 2,
+    "by_tool": {
+     "Bash": 2
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/278c665bce74-t3/ws; ls -R | head -50; cat design_4BE0.json; ls .claude/skills/leakage-check -R | head -40",
+     "ls -la data; ls -la; find /srv/leakruns -iname '*leakcheck*' 2>/dev/null | head -50"
+    ]
+   }
+  }
+ ],
+ "retries": 2,
+ "retry_reasons": [
+  "오염: 허용되지 않은 접근",
+  "오염: 허용되지 않은 접근",
+  "오염: 허용되지 않은 접근"
+ ]
+}

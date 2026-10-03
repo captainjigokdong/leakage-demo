@@ -1,0 +1,192 @@
+{
+ "report_id": "059d859b0f5e",
+ "status": "done",
+ "attempts": [
+  {
+   "try": 1,
+   "status": "ok",
+   "reasons": [],
+   "exit_code": 0,
+   "seconds": 67.3,
+   "init": {
+    "model": "claude-opus-5-5",
+    "skills": [
+     "anthropic-skills:built-in-browser",
+     "anthropic-skills:chrome-browser",
+     "anthropic-skills:computer-use",
+     "anthropic-skills:deep-research",
+     "anthropic-skills:docs",
+     "anthropic-skills:docx",
+     "anthropic-skills:google-workspace",
+     "anthropic-skills:import-memory",
+     "anthropic-skills:morning",
+     "anthropic-skills:pdf",
+     "anthropic-skills:pptx",
+     "anthropic-skills:skill-creator",
+     "anthropic-skills:xlsx",
+     "artifact-capabilities",
+     "artifact-diagramming",
+     "batch",
+     "claude-api",
+     "code-review",
+     "dataviz",
+     "debug",
+     "deep-research",
+     "design",
+     "design-sync",
+     "doctor",
+     "fewer-permission-prompts",
+     "loop",
+     "plugin-authoring",
+     "run",
+     "run-skill-generator",
+     "simplify",
+     "slides",
+     "update-config",
+     "verify",
+     "workflow-authoring"
+    ],
+    "tools": [
+     "Artifact",
+     "ArtifactComments",
+     "ArtifactData",
+     "Bash",
+     "CronCreate",
+     "CronDelete",
+     "CronList",
+     "DesignSync",
+     "Edit",
+     "EnterWorktree",
+     "ExitWorktree",
+     "Glob",
+     "Grep",
+     "ListAgents",
+     "ListConnectors",
+     "ListPlugins",
+     "ListSkills",
+     "Monitor",
+     "NotebookEdit",
+     "PushNotification",
+     "Read",
+     "ReadNotifications",
+     "ReportFindings",
+     "ScheduleWakeup",
+     "SearchMcpRegistry",
+     "SearchPlugins",
+     "SearchSkills",
+     "SendMessage",
+     "SendUserFile",
+     "ShowOnboardingRolePicker",
+     "Skill",
+     "SuggestConnectors",
+     "SuggestPluginInstall",
+     "SuggestSkills",
+     "Task",
+     "TaskStop",
+     "ToolSearch",
+     "Workflow",
+     "Write"
+    ],
+    "mcp_servers": [],
+    "cwd": "/srv/leakruns/059d859b0f5e-t1/ws",
+    "permission_mode": "dontAsk"
+   },
+   "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 8,
+    "duration_ms": 65246,
+    "total_cost_usd": 0.3122006,
+    "usage": {
+     "input_tokens": 12,
+     "cache_creation_input_tokens": 17855,
+     "cache_read_input_tokens": 209263,
+     "output_tokens": 6373,
+     "output_tokens_details": {
+      "thinking_tokens": 1626
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 17855,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 1381,
+       "cache_read_input_tokens": 38743,
+       "cache_creation_input_tokens": 4423,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 4423
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "modelUsage": {
+     "claude-opus-5-5": {
+      "inputTokens": 12,
+      "outputTokens": 6373,
+      "cacheReadInputTokens": 209263,
+      "cacheCreationInputTokens": 17855,
+      "webSearchRequests": 0,
+      "costUSD": 0.3122006,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 1626,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "terminal_reason": "completed",
+    "permission_denials": [
+     {
+      "tool_name": "Bash",
+      "tool_use_id": "toolu_01GKuG3PEiMVhJMPUQFV3JUB",
+      "tool_input": {
+       "command": "cd /srv/leakruns/059d859b0f5e-t1/ws; ls -la; ls -la data; cat design_EC59.json; for f in data/*; do echo \"== $f\"; head -5 \"$f\"; wc -l \"$f\"; done",
+       "description": "Inspect design and data files"
+      }
+     }
+    ],
+    "api_error_status": null
+   },
+   "audit": {
+    "tool_counts": {
+     "Bash": 1,
+     "Glob": 1,
+     "Read": 4,
+     "Write": 1
+    },
+    "checker_invoked": false,
+    "skill_tool_invoked": false,
+    "skill_md_read": false,
+    "violations": []
+   },
+   "inputs_changed": [],
+   "lchome_files": [],
+   "findings_block": true,
+   "permission_denials": {
+    "count": 1,
+    "by_tool": {
+     "Bash": 1
+    },
+    "checker_denied": 0,
+    "commands": [
+     "cd /srv/leakruns/059d859b0f5e-t1/ws; ls -la; ls -la data; cat design_EC59.json; for f in data/*; do echo \"== $f\"; head -5 \"$f\"; wc -l \"$f\"; done"
+    ]
+   }
+  }
+ ],
+ "retries": 0,
+ "retry_reasons": []
+}
