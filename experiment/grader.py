@@ -55,6 +55,10 @@ KEYWORDS: dict[str, list[str]] = {
         "after prediction time", "after the prediction point", "after the landmark",
         "temporal leakage", "time leakage", "report time", "reported after", "result time",
         "collection time", "collect_time", "whole admission", "entire admission", "entire stay",
+        "퇴원 후에 코딩", "퇴원 후 코딩", "퇴원 뒤에 코딩", "코딩 지연", "코딩되어",
+        "예측 시점에 사용할 수 없", "예측 시점에는 사용할 수 없", "예측 시점에 쓸 수 없", "예측 시점에는 쓸 수 없",
+        "예측 시점에 이용할 수 없", "예측 시점에 존재하지", "예측 시점에는 존재하지",
+        "coded after discharge", "coding delay", "not usable at prediction", "cannot be used at prediction",
     ],
     "Q2": [  # 독립 단위
         "독립 단위", "분할 단위", "분할 키", "분할 묶음", "그룹 분할", "묶음 분할",
@@ -69,6 +73,10 @@ KEYWORDS: dict[str, list[str]] = {
         "split key", "split unit", "split by row", "row-level split", "admission-level split",
         "both train and test", "both training and test", "train and test sets", "across splits",
         "cv key", "cross-validation key", "patient overlap", "subject overlap",
+        "독립성이 깨", "독립성을 깨", "독립성 위반", "독립성을 위반", "독립성을 해", "독립성이 없",
+        "학습과 검증에", "학습과 검증 세트", "학습·검증", "학습/검증", "가족 구성원이",
+        "행 단위로 나누", "행 단위로 분할", "한 사람의 데이터", "같은 사람", "동일 인물", "양쪽에 섞", "양쪽에 들어",
+        "independence", "same person", "same individual", "both sides of the split",
     ],
     "Q3": [  # 적합 범위
         "적합 범위", "fit_scope", "fit scope", "범위에서 적합",
@@ -82,6 +90,10 @@ KEYWORDS: dict[str, list[str]] = {
         "before splitting", "before the split", "prior to splitting", "test set information",
         "information from the test", "training data only", "training set only", "train only",
         "train_fold", "preprocessing leakage", "feature selection leakage", "data snooping",
+        "전체 표본에서", "전체 표본으로", "전체 표본을", "전체 자료에서", "전체 자료로",
+        "시험 세트 정보", "시험 세트의 정보", "검증 세트 정보", "검증 세트의 정보", "테스트 세트 정보",
+        "테스트 세트의 정보", "평가 세트 정보", "평가 세트의 정보", "미리 본", "엿보",
+        "peek", "test data leak into", "whole sample", "full sample", "entire sample",
     ],
     "Q4": [  # 결과 출처
         "결과 출처", "결과 정의", "결과를 정한", "결과를 정의", "결과를 정하는", "결과와 같은 행",
@@ -92,6 +104,8 @@ KEYWORDS: dict[str, list[str]] = {
         "defines the outcome", "define the outcome", "outcome window", "encodes the outcome",
         "reflects the outcome", "same row as the outcome", "derived from the outcome",
         "consequence of the outcome", "downstream of the outcome",
+        "예측하려는 결과", "예측할 결과", "예측하는 결과", "예측 대상인 결과", "예측 대상 자체", "결과 그 자체",
+        "outcome we are predicting", "outcome being predicted", "is the outcome itself", "is itself the outcome",
     ],
     "Q5": [  # 선택 시점
         "선택 시점", "선택 편향", "불멸 시간", "생존 편향", "코호트 선택 시점", "대상자 선택 시점",
@@ -247,6 +261,9 @@ def matches(item: str, key: str) -> bool:
     if key == "model":
         return item in ("split", "model")
     if key.split(".")[0] in ("outcome", "tp"):
+        # 결과 확인 방식이 정답이면 그 층을 정하는 하위 집단 설정도 같은 항목으로 본다
+        if item == "cohort.subgroups" and (key + ".").startswith("outcome.ascertainment."):
+            return True
         return _prefix(item, key)
     return item == key
 
@@ -310,7 +327,7 @@ class Grade:
     n_entries: int = 0
     n_malformed: int = 0
     n_unable: int = 0                            # 점검 불가 지적 (탐지도 오경보도 아님)
-    n_unknown_kind: int = 0                      # 종류 불명 지적 (주 분석 미탐지, 보조 분석은 항목으로 판정)
+    n_unknown_kind: int = 0                      # 종류 불명 지적 (주 분석은 항목으로 판정, 보조 분석 미탐지)
     n_unresolved: int = 0                        # 대상 불명 지적 (설계서 항목으로 정할 수 없음)
     n_q6: int = 0                                # 다중 시도 지적 (채점하지 않음)
     defects: list[dict] = field(default_factory=list)
@@ -346,7 +363,7 @@ def _score(g: Grade, entries: list[Entry], design: dict, key_entry: dict) -> Gra
         qs = set().union(*(e.kind.qs for e in hit)) if hit else set()
         g.defects.append({"id": d["id"], "question": d["question"], "holdout": d["holdout"],
                           "adjusted": bool(d.get("adjustment")), "targets": kt,
-                          "primary": d["question"] in qs, "secondary": bool(hit),
+                          "primary": bool(hit), "secondary": d["question"] in qs,
                           "extra_kinds": sorted(qs - {d["question"]})})
     fa, flagged = [], []
     for e in pointing:
@@ -503,15 +520,15 @@ def bootstrap_diff(ga: list[dict], gb: list[dict], measure: str = "primary",
 
 def random_hit_prob(n_items: int, k_match: int, m_flags: int) -> tuple[float, float]:
     """m개 항목을 무작위로 골라(비복원) 각각에 종류 6개 중 하나를 무작위로 붙였을 때
-    k개 정답 항목 중 하나라도 맞힐 확률 → (주 분석: 항목+종류, 보조 분석: 항목만)."""
+    k개 정답 항목 중 하나라도 맞힐 확률 → (주 분석: 항목만, 보조 분석: 항목+종류)."""
     m = min(m_flags, n_items)
     if m == 0 or k_match == 0:
         return 0.0, 0.0
     total = math.comb(n_items, m)
-    sec = 1 - math.comb(n_items - k_match, m) / total
-    pri = sum(math.comb(k_match, j) * math.comb(n_items - k_match, m - j) / total * (1 - (5 / 6) ** j)
+    item_only = 1 - math.comb(n_items - k_match, m) / total
+    item_kind = sum(math.comb(k_match, j) * math.comb(n_items - k_match, m - j) / total * (1 - (5 / 6) ** j)
               for j in range(1, min(k_match, m) + 1))
-    return pri, sec
+    return item_only, item_kind
 
 
 def _poisson_binomial_sf(ps: list[float], k: int) -> float:
