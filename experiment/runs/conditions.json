@@ -1,722 +1,842 @@
 {
- "31daf8d422ee": {
+ "9889e5bb73c4": {
   "condition": "나",
   "rep": 1,
-  "variant": "design_E0E0.json",
+  "batch": 1,
+  "variant": "design_4BE0.json",
   "order": 0
  },
- "a0a01d6e50bb": {
+ "ad5253e4ea29": {
   "condition": "가",
-  "rep": 3,
-  "variant": "design_A1C2.json",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_94F5.json",
   "order": 1
  },
- "dcbdd5a10c2e": {
+ "0596e4fef32c": {
   "condition": "나",
   "rep": 1,
-  "variant": "design_9672.json",
+  "batch": 1,
+  "variant": "design_0B14.json",
   "order": 2
  },
- "37876ac299b7": {
+ "0482e5456e5f": {
   "condition": "가",
-  "rep": 2,
-  "variant": "design_A1C2.json",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_800E.json",
   "order": 3
  },
- "1b13cd1de60b": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_C963.json",
+ "55629d244931": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_D568.json",
   "order": 4
  },
- "e5a321bde802": {
+ "2ffe9759165c": {
   "condition": "가",
-  "rep": 2,
-  "variant": "design_AF15.json",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_5350.json",
   "order": 5
  },
- "0793be01ba09": {
+ "4a6420614d33": {
   "condition": "가",
   "rep": 1,
-  "variant": "design_94F5.json",
+  "batch": 1,
+  "variant": "design_9AF0.json",
   "order": 6
  },
- "ae368df1098b": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_1D2D.json",
-  "order": 7
- },
- "d3df389802f8": {
-  "condition": "나",
-  "rep": 2,
-  "variant": "design_94F5.json",
-  "order": 8
- },
- "a2d4b96a104d": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_E0E0.json",
-  "order": 9
- },
- "0c8b45f4780d": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_1D2D.json",
-  "order": 10
- },
- "39daf1666429": {
+ "ce248b1c3eb5": {
   "condition": "나",
   "rep": 1,
-  "variant": "design_D97B.json",
+  "batch": 1,
+  "variant": "design_E6D6.json",
+  "order": 7
+ },
+ "dc419bf2f8c4": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_C963.json",
+  "order": 8
+ },
+ "1e316e2fedc9": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_0B14.json",
+  "order": 9
+ },
+ "219037c808cb": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_A1C2.json",
+  "order": 10
+ },
+ "f5f55b3d4b0d": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_AF15.json",
   "order": 11
  },
- "0ee5abeaed7e": {
+ "f12fa471c4bd": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_F872.json",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_7F4F.json",
   "order": 12
  },
- "20b55da4f493": {
+ "71d74a4fe97c": {
   "condition": "가",
-  "rep": 2,
-  "variant": "design_E0E0.json",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_9672.json",
   "order": 13
  },
- "41110cf9e387": {
+ "8da1b1d595a2": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_E6D6.json",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_800E.json",
   "order": 14
  },
- "a302ee8eaee8": {
+ "f2c8b661eefe": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_1D2D.json",
+  "order": 15
+ },
+ "cec85feafb61": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_A1C2.json",
+  "order": 16
+ },
+ "b615c526bace": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_D97B.json",
+  "order": 17
+ },
+ "359307c27e61": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_EC59.json",
+  "order": 18
+ },
+ "ff2a0e6e1c75": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_9AF0.json",
+  "order": 19
+ },
+ "b2a09c4c20ad": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_D568.json",
+  "order": 20
+ },
+ "ecccca21c9ab": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_E0E0.json",
+  "order": 21
+ },
+ "953697f71cd3": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_2340.json",
+  "order": 22
+ },
+ "d2f051431c15": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_48A5.json",
+  "order": 23
+ },
+ "b18c874003ec": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_F872.json",
+  "order": 24
+ },
+ "80454e7a6ba7": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_C963.json",
+  "order": 25
+ },
+ "5584dfc2305d": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_48A5.json",
+  "order": 26
+ },
+ "e5b791f71519": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_F872.json",
+  "order": 27
+ },
+ "716f667fe013": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_EC59.json",
+  "order": 28
+ },
+ "8a5e783a1eee": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_E6D6.json",
+  "order": 29
+ },
+ "86f6ff747d8e": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_2340.json",
+  "order": 30
+ },
+ "bff74badef4c": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_D97B.json",
+  "order": 31
+ },
+ "64fafbd706ec": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_4BE0.json",
+  "order": 32
+ },
+ "3472b5c94a07": {
+  "condition": "가",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_7F4F.json",
+  "order": 33
+ },
+ "50a69085f677": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_E0E0.json",
+  "order": 34
+ },
+ "ed10e016c660": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_94F5.json",
+  "order": 35
+ },
+ "0d226ce41b00": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_AF15.json",
+  "order": 36
+ },
+ "0f5e83443aca": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_9672.json",
+  "order": 37
+ },
+ "a799a8b8e790": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_1D2D.json",
+  "order": 38
+ },
+ "83656e0d9ad7": {
+  "condition": "나",
+  "rep": 1,
+  "batch": 1,
+  "variant": "design_5350.json",
+  "order": 39
+ },
+ "20b55da4f493": {
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_F872.json",
+  "order": 40
+ },
+ "41110cf9e387": {
   "condition": "가",
   "rep": 2,
-  "variant": "design_EC59.json",
-  "order": 15
+  "batch": 2,
+  "variant": "design_94F5.json",
+  "order": 41
+ },
+ "a302ee8eaee8": {
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_48A5.json",
+  "order": 42
  },
  "7cc761a63ec3": {
   "condition": "나",
   "rep": 2,
-  "variant": "design_1D2D.json",
-  "order": 16
+  "batch": 2,
+  "variant": "design_AF15.json",
+  "order": 43
  },
  "bd71245257e4": {
   "condition": "나",
   "rep": 2,
-  "variant": "design_0B14.json",
-  "order": 17
+  "batch": 2,
+  "variant": "design_C963.json",
+  "order": 44
  },
  "4b662376e58b": {
   "condition": "나",
-  "rep": 3,
-  "variant": "design_0B14.json",
-  "order": 18
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_2340.json",
+  "order": 45
  },
  "9af44628624a": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_0B14.json",
-  "order": 19
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_7F4F.json",
+  "order": 46
  },
  "fbe3d713f2fb": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_2340.json",
-  "order": 20
+  "condition": "가",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_F872.json",
+  "order": 47
  },
  "f0081e0a0d44": {
-  "condition": "나",
+  "condition": "가",
   "rep": 2,
-  "variant": "design_9672.json",
-  "order": 21
+  "batch": 2,
+  "variant": "design_EC59.json",
+  "order": 48
  },
  "067956ad442a": {
   "condition": "가",
-  "rep": 3,
-  "variant": "design_2340.json",
-  "order": 22
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_1D2D.json",
+  "order": 49
  },
  "b7f656328750": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_D568.json",
-  "order": 23
- },
- "155dc51d8f01": {
   "condition": "가",
   "rep": 2,
-  "variant": "design_D97B.json",
-  "order": 24
+  "batch": 2,
+  "variant": "design_800E.json",
+  "order": 50
+ },
+ "155dc51d8f01": {
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_1D2D.json",
+  "order": 51
  },
  "9fb8aaf1f0dd": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_AF15.json",
-  "order": 25
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_94F5.json",
+  "order": 52
  },
  "b5dc9c59a39d": {
   "condition": "가",
   "rep": 2,
-  "variant": "design_800E.json",
-  "order": 26
+  "batch": 2,
+  "variant": "design_D97B.json",
+  "order": 53
  },
  "359382178a9e": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_AF15.json",
-  "order": 27
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_0B14.json",
+  "order": 54
  },
  "cd939d7b849c": {
   "condition": "가",
-  "rep": 3,
-  "variant": "design_F872.json",
-  "order": 28
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_A1C2.json",
+  "order": 55
  },
  "1e242d49def6": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_9AF0.json",
-  "order": 29
- },
- "1a7d608e5959": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_D568.json",
-  "order": 30
- },
- "e2edefa2218a": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_EC59.json",
-  "order": 31
- },
- "b6ea1a5bcb91": {
   "condition": "가",
   "rep": 2,
-  "variant": "design_C963.json",
-  "order": 32
+  "batch": 2,
+  "variant": "design_2340.json",
+  "order": 56
+ },
+ "1a7d608e5959": {
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_D97B.json",
+  "order": 57
+ },
+ "e2edefa2218a": {
+  "condition": "가",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_D568.json",
+  "order": 58
+ },
+ "b6ea1a5bcb91": {
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_800E.json",
+  "order": 59
  },
  "b1557c296c10": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_D568.json",
-  "order": 33
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_E0E0.json",
+  "order": 60
  },
  "c11b49a41acc": {
-  "condition": "나",
+  "condition": "가",
   "rep": 2,
-  "variant": "design_7F4F.json",
-  "order": 34
+  "batch": 2,
+  "variant": "design_C963.json",
+  "order": 61
  },
  "44fab1ce9246": {
-  "condition": "나",
+  "condition": "가",
   "rep": 2,
-  "variant": "design_D568.json",
-  "order": 35
+  "batch": 2,
+  "variant": "design_AF15.json",
+  "order": 62
  },
  "803ae2798237": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_E6D6.json",
-  "order": 36
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_48A5.json",
+  "order": 63
  },
  "42edb86f432e": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_F872.json",
-  "order": 37
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_A1C2.json",
+  "order": 64
  },
  "e1869e272eec": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_5350.json",
-  "order": 38
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_4BE0.json",
+  "order": 65
  },
  "4d41c4036f4e": {
   "condition": "가",
-  "rep": 3,
-  "variant": "design_9AF0.json",
-  "order": 39
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_E0E0.json",
+  "order": 66
  },
  "5a593f852c4b": {
   "condition": "가",
   "rep": 2,
-  "variant": "design_4BE0.json",
-  "order": 40
+  "batch": 2,
+  "variant": "design_9AF0.json",
+  "order": 67
  },
  "627ec270fa2a": {
-  "condition": "가",
-  "rep": 1,
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
   "variant": "design_7F4F.json",
-  "order": 41
+  "order": 68
  },
  "754c8892a30b": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_48A5.json",
-  "order": 42
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_5350.json",
+  "order": 69
  },
  "a9a2c5bf2c4e": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_C963.json",
-  "order": 43
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_E6D6.json",
+  "order": 70
  },
  "a857e4c75331": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_D97B.json",
-  "order": 44
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_EC59.json",
+  "order": 71
  },
  "d972765f7d71": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_EC59.json",
-  "order": 45
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_9AF0.json",
+  "order": 72
  },
  "62aada1958ed": {
   "condition": "나",
   "rep": 2,
-  "variant": "design_D97B.json",
-  "order": 46
+  "batch": 2,
+  "variant": "design_4BE0.json",
+  "order": 73
  },
  "df95f46fa469": {
   "condition": "가",
-  "rep": 3,
-  "variant": "design_48A5.json",
-  "order": 47
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_5350.json",
+  "order": 74
  },
  "685054c0e98c": {
   "condition": "가",
-  "rep": 3,
-  "variant": "design_9672.json",
-  "order": 48
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_0B14.json",
+  "order": 75
  },
  "edc61c9c3a1d": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_9AF0.json",
-  "order": 49
- },
- "0e407e31eb9a": {
-  "condition": "가",
   "rep": 2,
-  "variant": "design_9AF0.json",
-  "order": 50
- },
- "791af8040466": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_7F4F.json",
-  "order": 51
- },
- "358d04627f6f": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_0B14.json",
-  "order": 52
- },
- "e7bca0e4cab0": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_2340.json",
-  "order": 53
- },
- "e08da3ec1f38": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_0B14.json",
-  "order": 54
- },
- "33d959a7c0e2": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_9672.json",
-  "order": 55
- },
- "d488286c1a8a": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_C963.json",
-  "order": 56
- },
- "93c137ae5f4c": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_94F5.json",
-  "order": 57
- },
- "403a20fcefab": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_A1C2.json",
-  "order": 58
- },
- "6735be9a93dd": {
-  "condition": "나",
-  "rep": 2,
-  "variant": "design_9AF0.json",
-  "order": 59
- },
- "102c80193aba": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_AF15.json",
-  "order": 60
- },
- "ec88c5653e6a": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_800E.json",
-  "order": 61
- },
- "cfea55b7a00a": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_EC59.json",
-  "order": 62
- },
- "b4f4cc4af782": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_A1C2.json",
-  "order": 63
- },
- "05f2d4e3f6e3": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_800E.json",
-  "order": 64
- },
- "65b366493887": {
-  "condition": "나",
-  "rep": 2,
-  "variant": "design_A1C2.json",
-  "order": 65
- },
- "440ef59e7f78": {
-  "condition": "나",
-  "rep": 2,
-  "variant": "design_E0E0.json",
-  "order": 66
- },
- "2b7c6651cfef": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_2340.json",
-  "order": 67
- },
- "090ee233c39c": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_9672.json",
-  "order": 68
- },
- "de07c1fd045f": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_7F4F.json",
-  "order": 69
- },
- "10d5267f9c91": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_E6D6.json",
-  "order": 70
- },
- "1580b84318ee": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_48A5.json",
-  "order": 71
- },
- "59a8c34f3e14": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_800E.json",
-  "order": 72
- },
- "d3b9553a37ac": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_AF15.json",
-  "order": 73
- },
- "8eaa0a70f709": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_0B14.json",
-  "order": 74
- },
- "e4af8059ad4a": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_7F4F.json",
-  "order": 75
- },
- "fa149fec9990": {
-  "condition": "가",
-  "rep": 2,
+  "batch": 2,
   "variant": "design_E6D6.json",
   "order": 76
  },
- "4ff8f977d00a": {
+ "0e407e31eb9a": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_C963.json",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_9672.json",
   "order": 77
  },
- "b570b1247040": {
-  "condition": "가",
-  "rep": 3,
-  "variant": "design_5350.json",
+ "791af8040466": {
+  "condition": "나",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_D568.json",
   "order": 78
  },
- "53b2d1d45789": {
+ "358d04627f6f": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_D568.json",
+  "rep": 2,
+  "batch": 2,
+  "variant": "design_9672.json",
   "order": 79
  },
- "18a57dc5484c": {
+ "72e2c214f634": {
   "condition": "가",
-  "rep": 2,
-  "variant": "design_94F5.json",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_9672.json",
   "order": 80
  },
- "51ec9942ed32": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_F872.json",
+ "b3d44b3b7f5d": {
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_48A5.json",
   "order": 81
  },
- "80ece592b73f": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_4BE0.json",
-  "order": 82
- },
- "e224d9bee7e2": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_1D2D.json",
-  "order": 83
- },
- "39b68b240fac": {
-  "condition": "나",
-  "rep": 3,
-  "variant": "design_800E.json",
-  "order": 84
- },
- "72e2c214f634": {
-  "condition": "나",
-  "rep": 2,
-  "variant": "design_4BE0.json",
-  "order": 85
- },
- "b3d44b3b7f5d": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_9672.json",
-  "order": 86
- },
  "ef0c7b06437e": {
-  "condition": "나",
+  "condition": "가",
   "rep": 3,
-  "variant": "design_94F5.json",
-  "order": 87
+  "batch": 3,
+  "variant": "design_48A5.json",
+  "order": 82
  },
  "335043fb4748": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_EC59.json",
-  "order": 88
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_800E.json",
+  "order": 83
  },
  "eac822ae25fc": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_1D2D.json",
-  "order": 89
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_4BE0.json",
+  "order": 84
  },
  "1e7dce844a23": {
-  "condition": "가",
+  "condition": "나",
   "rep": 3,
-  "variant": "design_E0E0.json",
-  "order": 90
+  "batch": 3,
+  "variant": "design_5350.json",
+  "order": 85
  },
  "72d114346041": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_C963.json",
-  "order": 91
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_1D2D.json",
+  "order": 86
  },
  "3c616d816bd0": {
   "condition": "가",
-  "rep": 2,
-  "variant": "design_48A5.json",
-  "order": 92
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_800E.json",
+  "order": 87
  },
  "5dd0db6637c8": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_EC59.json",
-  "order": 93
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_94F5.json",
+  "order": 88
  },
  "39cf7d8f6d73": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_5350.json",
-  "order": 94
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_D568.json",
+  "order": 89
  },
  "0366b2d8308c": {
-  "condition": "가",
+  "condition": "나",
   "rep": 3,
-  "variant": "design_E6D6.json",
-  "order": 95
+  "batch": 3,
+  "variant": "design_9AF0.json",
+  "order": 90
  },
  "780781a639ef": {
-  "condition": "나",
-  "rep": 2,
-  "variant": "design_5350.json",
-  "order": 96
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_D97B.json",
+  "order": 91
  },
  "4c69c8fc95f2": {
-  "condition": "나",
+  "condition": "가",
   "rep": 3,
-  "variant": "design_F872.json",
-  "order": 97
+  "batch": 3,
+  "variant": "design_EC59.json",
+  "order": 92
  },
  "d8ceb5eff919": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_5350.json",
-  "order": 98
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_9672.json",
+  "order": 93
  },
  "a243057970e3": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_2340.json",
-  "order": 99
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_9AF0.json",
+  "order": 94
  },
  "a6f541abe0c7": {
-  "condition": "나",
-  "rep": 1,
-  "variant": "design_4BE0.json",
-  "order": 100
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_E6D6.json",
+  "order": 95
  },
  "96186aafef80": {
   "condition": "가",
   "rep": 3,
-  "variant": "design_4BE0.json",
-  "order": 101
+  "batch": 3,
+  "variant": "design_1D2D.json",
+  "order": 96
  },
  "e3cb8f54fd0b": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_800E.json",
-  "order": 102
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_D97B.json",
+  "order": 97
  },
  "14824aa86d76": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_AF15.json",
-  "order": 103
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_0B14.json",
+  "order": 98
  },
  "59dea5132e5e": {
-  "condition": "가",
-  "rep": 2,
-  "variant": "design_F872.json",
-  "order": 104
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_2340.json",
+  "order": 99
  },
  "3fba2c4ea827": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_48A5.json",
-  "order": 105
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_C963.json",
+  "order": 100
  },
  "ddb513d1d126": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_9AF0.json",
-  "order": 106
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_E6D6.json",
+  "order": 101
  },
  "e5cd9c9b15b8": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_2340.json",
-  "order": 107
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_A1C2.json",
+  "order": 102
  },
  "daf87b6a2f20": {
   "condition": "가",
-  "rep": 2,
-  "variant": "design_D568.json",
-  "order": 108
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_F872.json",
+  "order": 103
  },
  "b9db24901a6b": {
   "condition": "가",
-  "rep": 1,
-  "variant": "design_D97B.json",
-  "order": 109
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_0B14.json",
+  "order": 104
  },
  "a1be205167bf": {
   "condition": "나",
   "rep": 3,
-  "variant": "design_D97B.json",
-  "order": 110
+  "batch": 3,
+  "variant": "design_F872.json",
+  "order": 105
  },
  "ed0eeba483e5": {
   "condition": "나",
-  "rep": 1,
-  "variant": "design_E6D6.json",
-  "order": 111
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_C963.json",
+  "order": 106
  },
  "9b24b5bd07d5": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_4BE0.json",
-  "order": 112
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_E0E0.json",
+  "order": 107
  },
  "1f6f070ae4e2": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_A1C2.json",
-  "order": 113
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_EC59.json",
+  "order": 108
  },
  "24c8d5c9a081": {
   "condition": "나",
   "rep": 3,
-  "variant": "design_5350.json",
-  "order": 114
+  "batch": 3,
+  "variant": "design_D568.json",
+  "order": 109
  },
  "70dd02ad4777": {
   "condition": "가",
   "rep": 3,
-  "variant": "design_94F5.json",
-  "order": 115
+  "batch": 3,
+  "variant": "design_AF15.json",
+  "order": 110
  },
  "9a271136550f": {
   "condition": "가",
   "rep": 3,
-  "variant": "design_7F4F.json",
-  "order": 116
+  "batch": 3,
+  "variant": "design_2340.json",
+  "order": 111
  },
  "24f1e9cde2ae": {
   "condition": "가",
-  "rep": 1,
+  "rep": 3,
+  "batch": 3,
   "variant": "design_E0E0.json",
-  "order": 117
+  "order": 112
  },
  "82c99a3e0192": {
-  "condition": "가",
-  "rep": 1,
-  "variant": "design_1D2D.json",
-  "order": 118
+  "condition": "나",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_AF15.json",
+  "order": 113
  },
  "5386ab6f64f2": {
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_94F5.json",
+  "order": 114
+ },
+ "49aa680fa20f": {
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_4BE0.json",
+  "order": 115
+ },
+ "c671808c8d4f": {
   "condition": "나",
-  "rep": 2,
-  "variant": "design_48A5.json",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_7F4F.json",
+  "order": 116
+ },
+ "3355518ade34": {
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_5350.json",
+  "order": 117
+ },
+ "2021f7af6b23": {
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_7F4F.json",
+  "order": 118
+ },
+ "d49b593b7474": {
+  "condition": "가",
+  "rep": 3,
+  "batch": 3,
+  "variant": "design_A1C2.json",
   "order": 119
  }
 }

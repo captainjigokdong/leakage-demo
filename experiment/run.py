@@ -5,7 +5,8 @@
     python -m experiment.run schedule              # 실행표 만들기 (이미 있으면 같은지 확인)
     python -m experiment.run preflight             # 격리 확인 (실행 사용자가 저장소를 못 읽는지)
     python -m experiment.run pilot                 # 작은 시험 실행: 변형 2개 × 조건 2 × 1회 → experiment/pilot/
-    python -m experiment.run main [--limit N]      # 본 실행 120회 → experiment/runs/ (완료한 것은 건너뜀)
+    python -m experiment.run main [--limit N]      # 본 실행 120회 = 묶음 3개(반복 단위, 40회씩) → experiment/runs/
+                                                   # 묶음마다 커밋·푸시. 한도에 걸리면 멈추고, 다시 부르면 이어 간다
     python -m experiment.run status [--out DIR]    # 진행 상황, 조건별 재실행 횟수·사유
 
 저장 (DIR = experiment/runs 또는 experiment/pilot)
@@ -48,7 +49,7 @@ PILOT_OUT = ROOT / "experiment" / "pilot"
 
 SCHEDULE_SEED = 20261004
 PILOT_SEED = 20261005
-REPS = 3
+REPS = 3                   # 반복 = 묶음. 묶음 하나 = 변형 20 × 조건 2 = 40회
 CONDITIONS = ("가", "나")
 MODEL = "claude-opus-5-5"
 TIMEOUT_S = 20 * 60
@@ -75,8 +76,13 @@ LEAKCHECK_FILES = (
 LEAKCHECK_EXCLUDED = ("tests", "docs", "designs/inject.py", "designs/error_catalog_public.csv",
                       "designs/variants", "designs/base", "sealed", "experiment", "CLAUDE.md")
 
-# 실행 사용자 환경: 허용 목록만 넘긴다 (상속 환경의 추가 폴더·세션 정보가 새지 않게)
-ENV_PASS = ("ANTHROPIC_BASE_URL", "HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "NO_PROXY", "no_proxy")
+# 실행 사용자 환경 (2026-10-03 사용자 결정): 세션 환경을 그대로 넘기되, 오염을 일으키는 것으로 확인된 변수만 뺀다.
+# 인증 변수가 무엇인지 찾거나 값을 보지 않는다. 확인된 오염: 이 세션과 같은 세션 id로 뜸(0단계), 저장소를 추가 폴더로 넣음.
+ENV_DROP = ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CLAUDE_CODE_REMOTE_SESSION_ID",
+            "CLAUDE_ADDITIONAL_DIRECTORIES", "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD")
+# 실행 폴더별로 덮어쓰는 변수 (집·설정 폴더·PATH, 실행 사용자가 못 읽는 /root 안 CA 경로)
+CA_VARS = ("NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE", "PIP_CERT",
+           "AWS_CA_BUNDLE", "NIX_SSL_CERT_FILE", "DENO_CERT", "CLOUDSDK_CORE_CUSTOM_CA_CERTS_FILE", "HEX_CACERTS_PATH")
 
 # 실행 기록에 나타나면 오염으로 보는 경로 (실행 폴더 밖 민감 경로)
 FORBIDDEN_PREFIXES = (str(ROOT), "/home/user", "/root", "/mnt/user-data", "/tmp/claude-0")
@@ -95,17 +101,23 @@ def design_type(v: str) -> str:
 
 
 def build_schedule(vs: list[str], reps: int, seed: int) -> dict[str, dict]:
-    """{report_id: {condition, rep, variant, order}}. 순서는 섞어서 조건·변형이 시간에 몰리지 않게 한다."""
+    """{report_id: {condition, rep, batch, variant, order}}.
+
+    반복 단위 묶음: 묶음 r = 반복 r의 (변형 × 조건) 전부. 묶음 1을 다 돌린 뒤 묶음 2로 간다.
+    묶음 안에서는 순서를 섞어 조건·변형이 시간에 몰리지 않게 한다.
+    """
     rng = random.Random(seed)
-    rows = [(v, c, r) for v in vs for c in CONDITIONS for r in range(1, reps + 1)]
-    rng.shuffle(rows)
-    out, used = {}, set()
-    for i, (v, c, r) in enumerate(rows):
-        rid = "%012x" % rng.getrandbits(48)
-        while rid in used:
+    out, used, order = {}, set(), 0
+    for r in range(1, reps + 1):
+        rows = [(v, c) for v in vs for c in CONDITIONS]
+        rng.shuffle(rows)
+        for v, c in rows:
             rid = "%012x" % rng.getrandbits(48)
-        used.add(rid)
-        out[rid] = {"condition": c, "rep": r, "variant": v, "order": i}
+            while rid in used:
+                rid = "%012x" % rng.getrandbits(48)
+            used.add(rid)
+            out[rid] = {"condition": c, "rep": r, "batch": r, "variant": v, "order": order}
+            order += 1
     return out
 
 
@@ -179,16 +191,13 @@ def inputs_changed(rd: RunDir) -> list[str]:
 
 # ---------------------------------------------------------------- 에이전트 실행
 
-def agent_env(rd: RunDir, condition: str) -> dict[str, str]:
+def agent_env(rd: RunDir, condition: str, base_env: dict[str, str] | None = None) -> dict[str, str]:
+    env = {k: v for k, v in (os.environ if base_env is None else base_env).items() if k not in ENV_DROP}
     ca = str(SHARED / "ca-bundle.crt")
-    env = {"PATH": "/opt/node22/bin:/usr/local/bin:/usr/bin:/bin", "HOME": str(rd.home), "LANG": "C.UTF-8",
-           "CLAUDE_CONFIG_DIR": str(rd.cfg), "NODE_EXTRA_CA_CERTS": ca, "SSL_CERT_FILE": ca,
-           "REQUESTS_CA_BUNDLE": ca, "CURL_CA_BUNDLE": ca, "PIP_CERT": ca}
-    env.update({k: os.environ[k] for k in ENV_PASS if k in os.environ})
-    # 인증: 환경 설정의 ANTHROPIC_API_KEY만 넘긴다 (이 세션의 인증 정보는 넘기지 않는다). 키가 있으면 기본 API 주소를 쓴다.
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        env["ANTHROPIC_API_KEY"] = os.environ["ANTHROPIC_API_KEY"]
-        env.pop("ANTHROPIC_BASE_URL", None)
+    env.update({k: ca for k in CA_VARS if k in env or k in ("NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE")})
+    env.update({"PATH": "/opt/node22/bin:/usr/local/bin:/usr/bin:/bin", "HOME": str(rd.home),
+                "CLAUDE_CONFIG_DIR": str(rd.cfg)})
+    env.pop("LEAKCHECK_HOME", None)
     if condition == "가":
         env["LEAKCHECK_HOME"] = str(rd.lchome)
     return env
@@ -311,8 +320,20 @@ def result_info(events: list[dict]) -> dict:
         if e.get("type") == "result":
             return {k: e.get(k) for k in ("subtype", "is_error", "result", "num_turns", "duration_ms",
                                           "total_cost_usd", "usage", "modelUsage", "terminal_reason",
-                                          "permission_denials")}
+                                          "permission_denials", "api_error_status")}
     return {}
+
+
+LIMIT_RE = re.compile(r"usage limit|rate limit|limit reached|429|overloaded|too many requests", re.I)
+
+
+def is_limit(res: dict, err: bytes) -> bool:
+    """요금제 한도·속도 제한. 오류 문장만 본다 (오류가 아닌 보고서 본문은 보지 않는다)."""
+    if res.get("api_error_status") in (429, 529):
+        return True
+    if res and not res.get("is_error"):
+        return False
+    return bool(LIMIT_RE.search((res.get("result") or "") + err.decode("utf-8", "replace")[-2000:]))
 
 
 def denials(res: dict) -> dict:
@@ -379,7 +400,10 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
         reasons.append("오염: 허용되지 않은 접근")
     if changed:
         reasons.append("오염: 입력 파일 변경")
-    reasons += [f"조작 확인 실패: {m}" for m in manipulation_check(init, row["condition"], model)]
+    if code is not None and is_limit(res, err):
+        reasons = ["한도 도달"]
+    else:
+        reasons += [f"조작 확인 실패: {m}" for m in manipulation_check(init, row["condition"], model)]
     meta = {"try": try_no, "status": "fail" if reasons else "ok", "reasons": reasons, "exit_code": code,
             "seconds": round(secs, 1), "init": init,
             "result": {k: v for k, v in res.items() if k != "result"},
@@ -408,9 +432,22 @@ def _write_json(p: Path, obj) -> None:
     tmp.replace(p)
 
 
+def _fresh(d: Path) -> Path:
+    """이어 실행으로 같은 이름이 생겨도 앞 기록을 덮어쓰지 않는다."""
+    n, cand = 1, d
+    while cand.exists():
+        n += 1
+        cand = d.with_name(f"{d.name}_{n}")
+    return cand
+
+
 def _gz(p: Path, data: bytes) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(gzip.compress(data, mtime=0))
+
+
+class LimitReached(Exception):
+    """한도에 걸리면 이 행은 시도로 세지 않고 멈춘다. 다음 세션에서 이어 간다."""
 
 
 def run_row(out: Path, rid: str, row: dict, model: str, users: OsUser, launcher=launch,
@@ -418,10 +455,16 @@ def run_row(out: Path, rid: str, row: dict, model: str, users: OsUser, launcher=
     tries = []
     for k in range(1, MAX_RETRIES + 2):
         a = run_once(rid, row, k, model, users, launcher, base)
+        if a.reasons == ["한도 도달"]:
+            d = out / "discarded" / rid / f"limit{int(time.time())}"
+            _gz(d / "transcript.jsonl.gz", a.raw)
+            _gz(d / "stderr.txt.gz", a.stderr)
+            _write_json(d / "attempt.json", a.meta)
+            raise LimitReached(rid)
         tries.append(a.meta)
         if a.status == "ok":
             break
-        d = out / "discarded" / rid / f"try{k}"
+        d = _fresh(out / "discarded" / rid / f"try{k}")
         _gz(d / "transcript.jsonl.gz", a.raw)
         _gz(d / "stderr.txt.gz", a.stderr)
         _write_json(d / "attempt.json", {**a.meta, "result_text": result_info(a.events).get("result")})
@@ -451,23 +494,69 @@ def pending(out: Path, sched: dict[str, dict]) -> list[str]:
     return [rid for rid in sorted(sched, key=lambda r: sched[r]["order"]) if rid not in done]
 
 
+def batches(sched: dict[str, dict]) -> list[int]:
+    return sorted({r.get("batch", r["rep"]) for r in sched.values()})
+
+
 def run_all(out: Path, sched: dict[str, dict], model: str, workers: int = WORKERS, limit: int | None = None,
-            users: OsUser | None = None, launcher=launch, base: Path = RUN_BASE, checker=run_checker) -> list[dict]:
+            users: OsUser | None = None, launcher=launch, base: Path = RUN_BASE, checker=run_checker) -> dict:
+    """끝나지 않은 행을 순서대로 돌린다. 한도에 걸리면 새 행을 시작하지 않고 멈춘다.
+    돌려주는 값: {"results": [...], "limit_reached": bool}"""
     users = users or OsUser()
     todo = pending(out, sched)[:limit]
     lock = threading.Lock()
-    results = []
+    results, stop = [], threading.Event()
 
-    def one(rid: str) -> dict:
-        m = run_row(out, rid, sched[rid], model, users, launcher, base, checker)
+    def one(rid: str) -> None:
+        if stop.is_set():
+            return
+        try:
+            m = run_row(out, rid, sched[rid], model, users, launcher, base, checker)
+        except LimitReached:
+            stop.set()
+            print(f"{rid} 한도 도달: 새 실행을 시작하지 않는다", flush=True)
+            return
         with lock:
             results.append(m)
             print(f"[{len(results)}/{len(todo)}] {rid} {m['status']} 재실행 {m['retries']}", flush=True)
-        return m
 
     with ThreadPoolExecutor(max_workers=workers) as ex:
         list(ex.map(one, todo))
-    return results
+    return {"results": results, "limit_reached": stop.is_set()}
+
+
+def git_commit_push(paths: list[Path], message: str, tries: int = 4) -> bool:
+    subprocess.run(["git", "-C", str(ROOT), "add", *map(str, paths)], check=True)
+    if subprocess.run(["git", "-C", str(ROOT), "diff", "--cached", "--quiet"]).returncode == 0:
+        return True
+    subprocess.run(["git", "-C", str(ROOT), "commit", "-q", "-m", message], check=True)
+    for i in range(tries):
+        if subprocess.run(["git", "-C", str(ROOT), "push", "-q", "-u", "origin", "HEAD"]).returncode == 0:
+            return True
+        time.sleep(2 ** (i + 1))
+    return False
+
+
+COMMIT_TRAILER = ("\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n"
+                  "Claude-Session: https://claude.ai/code/session_01Pac45UtTMCsC9nGygoqhAZ")
+
+
+def run_batches(out: Path, sched: dict[str, dict], model: str, workers: int, commit: bool = True, **kw) -> bool:
+    """묶음 단위로 돌리고, 묶음이 끝날 때마다 커밋·푸시한다. 한도에 걸리면 지금까지를 커밋하고 False."""
+    for b in batches(sched):
+        sub = {rid: r for rid, r in sched.items() if r.get("batch", r["rep"]) == b}
+        if not pending(out, sub):
+            continue
+        res = run_all(out, sub, model, workers, **kw)
+        left = len(pending(out, sub))
+        msg = (f"6단계 {out.name}: 묶음 {b} " + ("완료" if left == 0 and not res["limit_reached"]
+                                               else f"중단 (남은 {left}회, 한도 도달={res['limit_reached']})"))
+        if commit:
+            git_commit_push([out], msg + COMMIT_TRAILER)
+        print(msg, flush=True)
+        if res["limit_reached"]:
+            return False
+    return True
 
 
 def status(out: Path) -> dict:
@@ -494,14 +583,16 @@ def status(out: Path) -> dict:
         for t in meta["attempts"]:
             c["seconds"].append(t["seconds"])
             c["cost_usd"] += (t["result"] or {}).get("total_cost_usd") or 0
-            u = (t["result"] or {}).get("usage") or {}
-            for k, uk in (("input", "input_tokens"), ("cache_creation", "cache_creation_input_tokens"),
-                          ("cache_read", "cache_read_input_tokens"), ("output", "output_tokens")):
-                c["tokens"][k] += u.get(uk) or 0
+            for mu in ((t["result"] or {}).get("modelUsage") or {}).values():
+                for k, uk in (("input", "inputTokens"), ("cache_creation", "cacheCreationInputTokens"),
+                              ("cache_read", "cacheReadInputTokens"), ("output", "outputTokens")):
+                    c["tokens"][k] += mu.get(uk) or 0
     for c in s.values():
         secs = c.pop("seconds")
         c["mean_seconds_per_attempt"] = round(sum(secs) / len(secs), 1) if secs else None
         c["cost_usd"] = round(c["cost_usd"], 3)
+        n = c["done"] + c["failed"]
+        c["mean_tokens_per_run"] = {k: round(v / n) for k, v in c["tokens"].items()} if n else None
     return s
 
 
@@ -544,6 +635,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--workers", type=int, default=WORKERS)
     ap.add_argument("--model", default=MODEL)
     ap.add_argument("--out", type=Path)
+    ap.add_argument("--no-commit", action="store_true")
     a = ap.parse_args(argv)
     if a.cmd == "status":
         print(json.dumps(status(a.out or RUNS_OUT), ensure_ascii=False, indent=1))
@@ -560,15 +652,13 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "schedule":
         print(f"{out / 'conditions.json'}: {len(sched)}행")
         return 0
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        raise SystemExit("ANTHROPIC_API_KEY가 없다. 실행 사용자는 이 세션의 인증을 쓰지 않으므로 환경 설정에 키를 넣고 새 세션에서 실행한다.")
     probs = preflight()
     if probs:
         raise SystemExit("격리 확인 실패:\n" + "\n".join(probs))
     prompt.text()
-    run_all(out, sched, a.model, a.workers, a.limit)
+    finished = run_batches(out, sched, a.model, a.workers, commit=not a.no_commit, limit=a.limit)
     print(json.dumps(status(out), ensure_ascii=False, indent=1))
-    return 0
+    return 0 if finished else 3
 
 
 if __name__ == "__main__":

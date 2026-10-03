@@ -69,6 +69,12 @@ def test_schedule_balanced_and_deterministic():
         for c in run.CONDITIONS:
             assert sorted(r["rep"] for r in s.values() if r["variant"] == v and r["condition"] == c) == [1, 2, 3]
     assert sorted(r["order"] for r in s.values()) == list(range(120))
+    # 반복 단위 묶음: 묶음 b의 40행이 순서 40(b-1)..40b-1을 차지
+    for b in (1, 2, 3):
+        rows = [r for r in s.values() if r["batch"] == b]
+        assert len(rows) == 40 and all(r["rep"] == b for r in rows)
+        assert sorted(r["order"] for r in rows) == list(range(40 * (b - 1), 40 * b))
+        assert {(r["variant"], r["condition"]) for r in rows} == {(v, c) for v in vs for c in run.CONDITIONS}
     assert all(len(rid) == 12 for rid in s)
 
 
@@ -97,8 +103,6 @@ def test_run_dirs_differ_only_by_skill(tmp_path):
                               if p.is_file() and ".claude" not in p.parts)
     assert files(a) == files(b)
     assert a.inputs == b.inputs
-    assert str(run.ROOT) not in json.dumps(run.agent_env(b, "나"))
-    assert "LEAKCHECK_HOME" not in run.agent_env(b, "나")
 
 
 def test_lchome_copy_has_only_checker_files(tmp_path):
@@ -124,13 +128,20 @@ def test_prompt_same_for_both_conditions():
     assert "WebSearch" in argv and "WebFetch" in argv and "--strict-mcp-config" in argv
 
 
-def test_env_whitelist(monkeypatch, tmp_path):
-    monkeypatch.setenv("CLAUDE_ADDITIONAL_DIRECTORIES", "/home/user/leakage-demo")
-    monkeypatch.setenv("CLAUDE_CODE_SESSION_ID", "x")
+def test_env_drops_only_contaminating_vars(tmp_path):
+    base = {"CLAUDE_ADDITIONAL_DIRECTORIES": "/home/user/leakage-demo", "CLAUDE_CODE_SESSION_ID": "x",
+            "CLAUDE_CODE_REMOTE_SESSION_ID": "x", "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD": "1",
+            "CLAUDECODE": "1", "SOME_OTHER": "kept", "SSL_CERT_FILE": "/root/.ccr/ca-bundle.crt",
+            "LEAKCHECK_HOME": "/home/user/leakage-demo"}
     rd = run.prepare_run(tmp_path, "a", run.variants()[0], "가")
-    env = run.agent_env(rd, "가")
-    assert "CLAUDE_ADDITIONAL_DIRECTORIES" not in env and "CLAUDE_CODE_SESSION_ID" not in env
+    env = run.agent_env(rd, "가", base)
+    assert not set(run.ENV_DROP) & set(env)
+    assert env["SOME_OTHER"] == "kept"
     assert env["CLAUDE_CONFIG_DIR"] == str(rd.cfg) and env["HOME"] == str(rd.home)
+    assert not env["SSL_CERT_FILE"].startswith("/root") and env["LEAKCHECK_HOME"] == str(rd.lchome)
+    rb = run.prepare_run(tmp_path, "b", run.variants()[0], "나")
+    assert "LEAKCHECK_HOME" not in run.agent_env(rb, "나", base)
+    assert "ANTHROPIC_API_KEY" not in open(run.__file__, encoding="utf-8").read()
 
 
 # ---------------------------------------------------------------- 실행과 재실행
@@ -262,9 +273,39 @@ def test_permission_denials_recorded(tmp_path):
     assert meta["status"] == "done"
 
 
-def test_api_key_passed_and_base_url_dropped(monkeypatch, tmp_path):
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
-    monkeypatch.setenv("ANTHROPIC_BASE_URL", "http://127.0.0.1:1")
-    rd = run.prepare_run(tmp_path, "a", run.variants()[0], "나")
-    env = run.agent_env(rd, "나")
-    assert env["ANTHROPIC_API_KEY"] == "test-key" and "ANTHROPIC_BASE_URL" not in env
+
+def test_limit_stops_without_counting_attempt(tmp_path):
+    lim = stream([], result="Claude usage limit reached", is_error=True)
+    row = {"condition": "나", "rep": 1, "variant": run.variants()[0], "order": 0}
+    with pytest.raises(run.LimitReached):
+        run.run_row(tmp_path / "out", "abc123def456", row, run.MODEL, FakeUsers(), launcher_from([(1, lim)]),
+                    tmp_path / "runs", fake_checker)
+    assert not (tmp_path / "out" / "meta").exists()
+    assert list((tmp_path / "out" / "discarded" / "abc123def456").iterdir())
+
+
+def test_report_mentioning_limit_is_not_limit():
+    assert not run.is_limit({"is_error": False, "result": "rate limit 관련 특징 ..."}, b"")
+
+
+def test_batches_resume_after_limit(tmp_path):
+    vs = run.variants()[:2]
+    sched = run.build_schedule(vs, 2, 3)        # 묶음 2개 × 4행
+    out = tmp_path / "out"
+    run.ensure_schedule(out, sched)
+    n = {"calls": 0}
+
+    def launch(argv, cwd, timeout):
+        n["calls"] += 1
+        if n["calls"] == 6:
+            return 1, stream([], result="usage limit reached", is_error=True), b"", 1.0
+        has = (cwd / ".claude").exists()
+        return 0, stream(["leakage-check"] if has else []), b"", 1.0
+
+    kw = dict(users=FakeUsers(), launcher=launch, base=tmp_path / "runs", checker=fake_checker)
+    assert run.run_batches(out, sched, run.MODEL, 1, commit=False, **kw) is False
+    first = {rid for rid, r in sched.items() if r["batch"] == 1}
+    assert not set(run.pending(out, sched)) & first           # 묶음 1은 끝남
+    assert len(run.pending(out, sched)) == 3                   # 묶음 2에서 1개만 끝나고 멈춤
+    assert run.run_batches(out, sched, run.MODEL, 1, commit=False, **kw) is True
+    assert run.pending(out, sched) == []
