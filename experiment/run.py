@@ -45,6 +45,7 @@ VARIANT_DIR = ROOT / "designs" / "variants"
 DATA_DIR = ROOT / "data" / "synth"
 SKILL_SRC = ROOT / "skill_src" / "leakage-check"
 RUNS_OUT = ROOT / "experiment" / "runs"
+HOOK_SRC = ROOT / "experiment" / "bash_allow_hook.py"
 PILOT_OUT = ROOT / "experiment" / "pilot"
 
 SCHEDULE_SEED = 20261004
@@ -223,9 +224,13 @@ def deny_settings(rd: "RunDir | None" = None) -> dict:
     """금지 경로 차단 + (실행 폴더를 주면) 자기 실행 폴더 안에서만 셸 출력 돌리기(> 파일) 허용."""
     rules = [f"{tool}(/{p}/**)" for p in DENY_PATHS for tool in ("Read", "Glob", "Grep")]
     perms = {"deny": rules}
+    out = {"permissions": perms}
     if rd is not None:
         perms["allow"] = [f"Edit(/{rd.root}/**)"]
-    return {"permissions": perms}
+        # 도구 실행 직전 훅: 허용 목록 명령만으로 된 Bash 명령을 "허용"만 한다 (변수 펼침 포함). 두 조건 같음.
+        out["hooks"] = {"PreToolUse": [{"matcher": "Bash", "hooks": [
+            {"type": "command", "command": f"/usr/local/bin/python3 {rd.root / 'bash_allow_hook.py'}"}]}]}
+    return out
 
 
 def agent_argv(text: str, model: str, settings: Path | None = None) -> list[str]:
@@ -506,6 +511,7 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
     text = prompt.render(row["variant"], "data")
     users.create(name, rd)
     try:
+        shutil.copy2(HOOK_SRC, rd.root / "bash_allow_hook.py")
         settings = rd.root / "settings.json"
         settings.write_text(json.dumps(deny_settings(rd)), encoding="utf-8")
         argv = users.wrap(name, agent_argv(text, model, settings), agent_env(rd, row["condition"]))
@@ -538,6 +544,9 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
             "audit": aud, "inputs_changed": changed, "lchome_files": rd.lchome_files,
             "findings_block": bool(re.search(r"```findings", res.get("result") or "")),
             "permission_denials": denials(res)}
+    # 점검기를 부르지 않은 실행에서 그 전에(= 실행 중 어디서든) 권한 거부가 있었는지 ((가)만 의미 있음)
+    meta["no_checker_after_denial"] = (row["condition"] == "가" and not aud["checker_invoked"]
+                                       and meta["permission_denials"]["count"] > 0)
     shutil.rmtree(rd.root, ignore_errors=True)
     return Attempt(meta["status"], reasons, code, secs, events, out, err, meta)
 
@@ -691,7 +700,7 @@ def status(out: Path) -> dict:
     sched = json.loads((out / "conditions.json").read_text(encoding="utf-8"))
     s = {c: {"planned": 0, "done": 0, "failed": 0, "retries": 0, "retry_reasons": {}, "checker_invoked": 0,
              "findings_block": 0, "seconds": [], "cost_usd": 0.0,
-             "permission_denials": 0, "checker_denied": 0, "contamination_discarded": 0, "tokens": {"input": 0, "cache_creation": 0, "cache_read": 0, "output": 0}} for c in CONDITIONS}
+             "permission_denials": 0, "checker_denied": 0, "contamination_discarded": 0, "no_checker_after_denial": 0, "tokens": {"input": 0, "cache_creation": 0, "cache_read": 0, "output": 0}} for c in CONDITIONS}
     for rid, row in sched.items():
         c = s[row["condition"]]
         c["planned"] += 1
@@ -708,6 +717,7 @@ def status(out: Path) -> dict:
         c["findings_block"] += last["findings_block"]
         c["permission_denials"] += last.get("permission_denials", {}).get("count", 0)
         c["checker_denied"] += last.get("permission_denials", {}).get("checker_denied", 0)
+        c["no_checker_after_denial"] += bool(last.get("no_checker_after_denial"))
         for t in meta["attempts"]:
             c["contamination_discarded"] += t["status"] == "fail" and any(r.startswith("오염") for r in t["reasons"])
             c["seconds"].append(t["seconds"])
@@ -720,6 +730,7 @@ def status(out: Path) -> dict:
         secs = c.pop("seconds")
         c["mean_seconds_per_attempt"] = round(sum(secs) / len(secs), 1) if secs else None
         c["cost_usd"] = round(c["cost_usd"], 3)
+        c["checker_invoked_rate"] = round(c["checker_invoked"] / c["done"], 3) if c["done"] else None
         c["blank"] = c["failed"]          # 재시도를 다 써도 실패한 행 = 빈칸 (보고서 없음)
         n = c["done"] + c["failed"]
         c["mean_tokens_per_run"] = {k: round(v / n) for k, v in c["tokens"].items()} if n else None

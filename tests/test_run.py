@@ -516,3 +516,12 @@ def test_blank_rows_counted(tmp_path):
                 tmp_path / "runs", fake_checker)
     st = run.status(out)
     assert st["가"]["blank"] == 1 and st["가"]["retries"] == 5
+
+
+def test_no_checker_after_denial_recorded(tmp_path):
+    s = stream(skills("가"), tools_used=[("Bash", {"command": "ls"})]).replace(
+        b'"total_cost_usd": 0.5}', b'"total_cost_usd": 0.5, "permission_denials": [{"tool_name": "Bash", "tool_input": {"command": "x"}}]}')
+    out, meta = go(tmp_path, "가", [(0, s)])
+    assert meta["attempts"][-1]["no_checker_after_denial"] is True
+    out2, meta2 = go(tmp_path / "2", "나", [(0, s.replace(b'leakage-check', b'zz'))])
+    assert meta2["attempts"][-1]["no_checker_after_denial"] is False
