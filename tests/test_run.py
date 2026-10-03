@@ -243,3 +243,20 @@ def test_resume_skips_done(tmp_path):
     assert run.pending(out, sched) == [] and len(calls) == 4
     st = run.status(out)
     assert st["가"]["done"] == 2 and st["나"]["done"] == 2 and st["가"]["retries"] == 0
+
+
+def test_permission_args_same_for_both_and_no_bypass():
+    argv = run.agent_argv("x", run.MODEL)
+    assert "bypassPermissions" not in " ".join(argv)
+    assert argv[argv.index("--permission-mode") + 1] == "dontAsk"
+    assert set(run.ALLOWED_TOOLS) == {"Read", "Glob", "Grep", "Skill", "Write", "Bash(python:*)", "Bash(python3:*)"}
+
+
+def test_permission_denials_recorded(tmp_path):
+    s = stream(skills("가")).replace(b'"total_cost_usd": 0.5}', b'"total_cost_usd": 0.5, "permission_denials": '
+        b'[{"tool_name": "Bash", "tool_input": {"command": "cd .claude && python scripts/run_check.py d.json"}},'
+        b' {"tool_name": "Edit", "tool_input": {"file_path": "x"}}]}')
+    out, meta = go(tmp_path, "가", [(0, s)])
+    d = meta["attempts"][-1]["permission_denials"]
+    assert d["count"] == 2 and d["checker_denied"] == 1 and d["by_tool"] == {"Bash": 1, "Edit": 1}
+    assert meta["status"] == "done"

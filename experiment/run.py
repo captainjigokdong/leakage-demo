@@ -61,8 +61,10 @@ CA_SRC = Path("/root/.ccr/ca-bundle.crt")
 
 # 두 조건에 똑같이 준다. 웹 검색·웹 가져오기는 둘 다 끈다.
 DISALLOWED_TOOLS = ("WebSearch", "WebFetch")
-# 권한 방식: 사용자 결정 대기 (docs/phases.md 6단계 기록 참고). 두 조건에 같은 값을 쓴다.
-PERMISSION_ARGS: tuple[str, ...] = ()
+# 권한 방식 (2026-10-03 사용자 결정): bypassPermissions는 쓰지 않는다. dontAsk 모드에서 미리 허용한 도구만 쓰고
+# 그 밖의 호출은 거부된다. 두 조건에 같은 값. python과 python3를 둘 다 허용한다 (SKILL.md가 python으로 부른다).
+ALLOWED_TOOLS = ("Read", "Glob", "Grep", "Skill", "Write", "Bash(python:*)", "Bash(python3:*)")
+PERMISSION_ARGS: tuple[str, ...] = ("--permission-mode", "dontAsk", "--allowedTools", *ALLOWED_TOOLS)
 
 # (가) LEAKCHECK_HOME 사본: 점검에 필요한 파일만. tests/, designs/inject.py, 오류 목록 CSV, docs/는 넣지 않는다.
 LEAKCHECK_FILES = (
@@ -304,8 +306,17 @@ def result_info(events: list[dict]) -> dict:
     for e in reversed(events):
         if e.get("type") == "result":
             return {k: e.get(k) for k in ("subtype", "is_error", "result", "num_turns", "duration_ms",
-                                          "total_cost_usd", "usage", "modelUsage", "terminal_reason")}
+                                          "total_cost_usd", "usage", "modelUsage", "terminal_reason",
+                                          "permission_denials")}
     return {}
+
+
+def denials(res: dict) -> dict:
+    """권한이 거부된 도구 호출 수 (점검기 호출이 거부된 수 따로)."""
+    d = res.get("permission_denials") or []
+    return {"count": len(d), "by_tool": {n: sum(x.get("tool_name") == n for x in d) for n in sorted({x.get("tool_name") for x in d})},
+            "checker_denied": sum("run_check.py" in json.dumps(x.get("tool_input") or {}, ensure_ascii=False) for x in d),
+            "commands": [str((x.get("tool_input") or {}).get("command", x.get("tool_name")))[:200] for x in d]}
 
 
 def manipulation_check(init: dict, condition: str, model: str) -> list[str]:
@@ -369,7 +380,8 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
             "seconds": round(secs, 1), "init": init,
             "result": {k: v for k, v in res.items() if k != "result"},
             "audit": aud, "inputs_changed": changed, "lchome_files": rd.lchome_files,
-            "findings_block": bool(re.search(r"```findings", res.get("result") or ""))}
+            "findings_block": bool(re.search(r"```findings", res.get("result") or "")),
+            "permission_denials": denials(res)}
     shutil.rmtree(rd.root, ignore_errors=True)
     return Attempt(meta["status"], reasons, code, secs, events, out, err, meta)
 
@@ -457,7 +469,8 @@ def run_all(out: Path, sched: dict[str, dict], model: str, workers: int = WORKER
 def status(out: Path) -> dict:
     sched = json.loads((out / "conditions.json").read_text(encoding="utf-8"))
     s = {c: {"planned": 0, "done": 0, "failed": 0, "retries": 0, "retry_reasons": {}, "checker_invoked": 0,
-             "findings_block": 0, "seconds": [], "cost_usd": 0.0} for c in CONDITIONS}
+             "findings_block": 0, "seconds": [], "cost_usd": 0.0,
+             "permission_denials": 0, "checker_denied": 0, "tokens": {"input": 0, "cache_creation": 0, "cache_read": 0, "output": 0}} for c in CONDITIONS}
     for rid, row in sched.items():
         c = s[row["condition"]]
         c["planned"] += 1
@@ -472,9 +485,15 @@ def status(out: Path) -> dict:
         last = meta["attempts"][-1]
         c["checker_invoked"] += last["audit"]["checker_invoked"]
         c["findings_block"] += last["findings_block"]
+        c["permission_denials"] += last.get("permission_denials", {}).get("count", 0)
+        c["checker_denied"] += last.get("permission_denials", {}).get("checker_denied", 0)
         for t in meta["attempts"]:
             c["seconds"].append(t["seconds"])
             c["cost_usd"] += (t["result"] or {}).get("total_cost_usd") or 0
+            u = (t["result"] or {}).get("usage") or {}
+            for k, uk in (("input", "input_tokens"), ("cache_creation", "cache_creation_input_tokens"),
+                          ("cache_read", "cache_read_input_tokens"), ("output", "output_tokens")):
+                c["tokens"][k] += u.get(uk) or 0
     for c in s.values():
         secs = c.pop("seconds")
         c["mean_seconds_per_attempt"] = round(sum(secs) / len(secs), 1) if secs else None
