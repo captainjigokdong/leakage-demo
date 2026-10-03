@@ -398,6 +398,12 @@ def is_limit(res: dict, err: bytes) -> bool:
     return bool(LIMIT_RE.search((res.get("result") or "") + err.decode("utf-8", "replace")[-2000:]))
 
 
+def is_auth_error(res: dict) -> bool:
+    """인증 실패 (오류 결과의 문장만 본다). 이 경우 더 시도하지 않고 전체를 멈춘다 (사용자 결정)."""
+    return bool(res.get("is_error")) and bool(re.search(r"Authentication error|Not logged in|/login",
+                                                         res.get("result") or ""))
+
+
 def denials(res: dict) -> dict:
     """권한이 거부된 도구 호출 수 (점검기 호출이 거부된 수 따로)."""
     d = res.get("permission_denials") or []
@@ -465,7 +471,9 @@ def run_once(rid: str, row: dict, try_no: int, model: str, users: OsUser, launch
         reasons.append("오염: 허용되지 않은 접근")
     if changed:
         reasons.append("오염: 입력 파일 변경")
-    if code is not None and is_limit(res, err):
+    if code is not None and is_auth_error(res):
+        reasons = ["인증 오류"]
+    elif code is not None and is_limit(res, err):
         reasons = ["한도 도달"]
     else:
         reasons += [f"조작 확인 실패: {m}" for m in manipulation_check(init, row["condition"], model)]
@@ -520,12 +528,12 @@ def run_row(out: Path, rid: str, row: dict, model: str, users: OsUser, launcher=
     tries = []
     for k in range(1, MAX_RETRIES + 2):
         a = run_once(rid, row, k, model, users, launcher, base)
-        if a.reasons == ["한도 도달"]:
+        if a.reasons in (["한도 도달"], ["인증 오류"]):
             d = out / "discarded" / rid / f"limit{int(time.time())}"
             _gz(d / "transcript.jsonl.gz", a.raw)
             _gz(d / "stderr.txt.gz", a.stderr)
             _write_json(d / "attempt.json", a.meta)
-            raise LimitReached(rid)
+            raise LimitReached(f"{rid}: {a.reasons[0]}")
         tries.append(a.meta)
         if a.status == "ok":
             break
@@ -579,7 +587,7 @@ def run_all(out: Path, sched: dict[str, dict], model: str, workers: int = WORKER
             m = run_row(out, rid, sched[rid], model, users, launcher, base, checker)
         except LimitReached:
             stop.set()
-            print(f"{rid} 한도 도달: 새 실행을 시작하지 않는다", flush=True)
+            print(f"{rid} 한도 도달 또는 인증 오류: 새 실행을 시작하지 않는다", flush=True)
             return
         with lock:
             results.append(m)

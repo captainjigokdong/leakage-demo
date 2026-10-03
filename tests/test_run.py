@@ -373,3 +373,11 @@ def test_contamination_discards_counted(tmp_path):
                 tmp_path / "runs", fake_checker)
     st = run.status(out)
     assert st["나"]["contamination_discarded"] == 1 and st["나"]["done"] == 1
+
+
+def test_auth_error_stops_without_retry(tmp_path):
+    bad = stream([], result="Authentication error · This may be a temporary network issue", is_error=True)
+    row = {"condition": "나", "rep": 1, "variant": run.variants()[0], "order": 0}
+    with pytest.raises(run.LimitReached):
+        run.run_row(tmp_path / "out", "abc123def456", row, run.MODEL, FakeUsers(), launcher_from([(1, bad)]),
+                    tmp_path / "runs", fake_checker)
